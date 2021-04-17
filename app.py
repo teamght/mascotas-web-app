@@ -7,6 +7,9 @@ from flask_mongoengine import MongoEngine
 from skimage.io import imread
 import os
 import random
+
+port = int(os.environ.get("PORT", 5000))
+
 app = Flask(__name__)
 
 app.config['MONGODB_HOST'] = DB_URI
@@ -96,4 +99,4 @@ def reportar_func():
     return jsonify(respuesta)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
