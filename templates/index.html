@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>
+            Bootstrap 4 Website Example
+        </title>
+        <meta charset="utf-8">
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+                <meta content="width=device-width, initial-scale=1.0" name="viewport">
+                    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+                        </script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js">
+                        </script>
+                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js">
+                        </script>
+                        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" id="bootstrap-css" rel="stylesheet">
+                            <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js">
+                            </script>
+                            <script src="//code.jquery.com/jquery-1.11.1.min.js">
+                            </script>
+                            <script>
+                                $(document).ready( function() {
+        $(document).on('change', '.btn-file :file', function() {
+        var input = $(this),
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [label]);
+        });
+
+        $('.btn-file :file').on('fileselect', function(event, label) {
+            
+            var input = $(this).parents('.input-group').find(':text'),
+                log = label;
+            
+            if( input.length ) {
+                input.val(log);
+            } else {
+                if( log ) alert(log);
+            }
+        
+        });
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function (e) {
+                    $('#img-upload').attr('src', e.target.result);
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+                
+            }
+        }
+
+        $("#imgInp").change(function(){
+            readURL(this);
+        });     
+    });
+                            </script>
+                            <style>
+                                .fakeimg {
+    height: 200px;
+    background: #aaa;
+  }
+  .btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+#img-upload{
+    width: 300px;
+ 
+}
+#res_img{
+    width:200px
+}
+#wrapper{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+#result1{
+    /* width:335px; */
+    align-items: center;
+        justify-content: center;
+        /* display: flex; */
+}
+#cards{
+    align-items: center;
+    justify-content: center;
+}
+                            </style>
+                        </link>
+                    </link>
+                </meta>
+            </meta>
+        </meta>
+    </head>
+    <body>
+        <div class="jumbotron text-center" style="margin-bottom:0">
+            <h1>
+                Proyecto Mascotas
+            </h1>
+        </div>
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <label>
+                        Inserte aquí una imágen y luego haga click en Buscar
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <span class="btn btn-dark btn-lg">
+                                <input id="imgInp" type="file">
+                                </input>
+                            </span>
+                        </span>
+                    </div>
+                    <img id="img-upload"/>
+                </div>
+            </div>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">Caracteristicas</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="descripcion">
+        </div>
+
+        <div class="container p-3 my-3 bg-muted text-white" id="wrapper">
+            <button class="btn btn-success" onclick="searchfunction()" type="button">
+                Buscar
+            </button>
+            <button class="btn btn-outline-success" onclick="clearfunction()" type="button">
+                Vaciar
+            </button>
+            <button class="btn btn-success" onclick="reportfunction()" type="button">
+                Reportar
+            </button>
+        </div>
+        
+        <div class="container p-3 my-3 bg-dark text-white" id="wrapper">
+            Resultados
+        </div>
+        <div class="container">
+            <div class="row row-cols-3" id="results-list">
+            </div>
+        </div>
+        
+        <div class="jumbotron text-center" id="footer" style="margin-bottom:0">
+            <!-- <p>Footer</p> -->
+        </div>
+    </body>
+    <script>
+        // document.getElementById("div1").innerHTML += "<h1>New text!</h1>"
+
+
+    function dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0)
+        byteString = atob(dataURI.split(',')[1]);
+    else
+        byteString = unescape(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ia], {type:mimeString});
+}
+
+function clearfunction() {
+    document.getElementById("results-list").innerHTML="";
+}    
+
+function showresults(ims) {
+
+    console.log(ims)
+        
+    top_='<div class="card" id="cards"><div class="card-body"><img src="' 
+    bot_='" id="res_img"></div>'
+    caracteristicas_='<div class="card-body">CARACTERISTICA</div>'
+    distancia_='<div class="card-body">DISTANCIA</div>'
+    final_='</div>'
+    
+    //const is_tensorflow = false;
+    const is_tensorflow = true;
+
+    // result_variable={{ims | tojson}};
+    result_variable=ims ;
+    
+    for (var i=0; i < 18; i++) {
+        var key = "results" + (is_tensorflow ? "_tf" : "") + (i+1).toString();
+        result_i = result_variable[key];
+        console.log(result_i);
+        if (result_i != undefined) {
+            var element = result_i.rutas[0];
+            console.log(element);
+            distancia = distancia_.replace('DISTANCIA', result_i.distancia)
+            caracteristicas = caracteristicas_.replace('CARACTERISTICA', result_i.caracteristicas)
+            var dog_html = top_+element+bot_ + distancia + caracteristicas + final_;
+            console.log(dog_html);
+            document.getElementById("results-list").innerHTML += dog_html;
+        }
+    }
+}  
+    
+function searchfunction(params) {
+    clearfunction();
+    var dataimg = new FormData();
+    dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
+    $.ajax({
+            url: "/search",
+            type:"POST",
+            cache : false,
+            contentType : false,
+            processType : false,
+            processData : false,
+            data: dataimg,
+        }).done(showresults);
+};
+
+function showmessage(ims) {
+    console.log(ims)
+    document.getElementById("results-list").innerHTML = ims;
+}  
+
+function reportfunction(params) {
+    clearfunction();
+    var dataimg = new FormData();
+
+    var inputdesc = document.getElementById('descripcion').value;
+    dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
+
+    // aca se agrega la descripcion del input
+    dataimg.append('inputdesc',inputdesc)
+
+    dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
+    $.ajax({
+            url: "/reportar",
+            type:"POST",
+            cache : false,
+            contentType : false,
+            processType : false,
+            processData : false,
+            data: dataimg,
+        }).done(showmessage);
+};
+    </script>
+</html>

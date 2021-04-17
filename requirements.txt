@@ -1,0 +1,9 @@
+#
+# mascotas-web-app
+#
+Flask
+Flask-Cors
+scikit-image
+gunicorn
+requests
+flask_mongoengine
