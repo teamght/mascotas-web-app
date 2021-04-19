@@ -93,7 +93,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        
       }
+
 #result1{
     /* width:335px; */
     align-items: center;
@@ -103,6 +105,9 @@
 #cards{
     align-items: center;
     justify-content: center;
+}
+#reportar{
+    text-align: center;
 }
                             </style>
                         </link>
@@ -120,8 +125,11 @@
         <div class="container" id="wrapper">
             <div class="col-md-6">
                 <div class="lead">
+                    <h2>
+                        Paso 1
+                    </h2>
                     <label>
-                        Inserte aquí una imágen y luego haga click en Buscar
+                        Inserte aquí una imágen en la que se vea la cara del perro que quiera buscar
                     </label>
                     <div class="input-group">
                         <span class="input-group-btn">
@@ -135,25 +143,47 @@
                 </div>
             </div>
         </div>
+        <br/>
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <h2>
+                        Paso 2
+                    </h2>
+                    <label>
+                        Escriba el color, ubicación de manchas u otras características particulares que identifique al perro
+                    </label>
+                </div>
+            </div>
+        </div>
         <div class="input-group mb-3 mx-auto w-50">
             <div class="input-group-prepend">
-                <span class="input-group-text" id="inputGroup-sizing-default">Caracteristicas</span>
+                <span class="input-group-text" id="inputGroup-sizing-default">
+                    Características
+                </span>
             </div>
-            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="descripcion">
+            <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="descripcion" placeholder="es blanco con una mancha marrón en el lomo, tiene la cola corta" type="text">
+            </input>
         </div>
-
+        <br/>
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <h2>
+                        Paso 3
+                    </h2>
+                    Presione el botón Buscar para empezar la búsqueda de perros parecidos que han sido reportados como perdidos y encontrados. Si quiere empezar de nuevo con otra foto y carácteristicas, presione Vaciar
+                </div>
+            </div>
+        </div>
         <div class="container p-3 my-3 bg-muted text-white" id="wrapper">
-            <button class="btn btn-success" onclick="searchfunction()" type="button">
+            <button class="btn btn-success" id="buscarperro" onclick="searchfunction()" type="button">
                 Buscar
             </button>
             <button class="btn btn-outline-success" onclick="clearfunction()" type="button">
                 Vaciar
             </button>
-            <button class="btn btn-success" onclick="reportfunction()" type="button">
-                Reportar
-            </button>
         </div>
-        
         <div class="container p-3 my-3 bg-dark text-white" id="wrapper">
             Resultados
         </div>
@@ -161,7 +191,6 @@
             <div class="row row-cols-3" id="results-list">
             </div>
         </div>
-        
         <div class="jumbotron text-center" id="footer" style="margin-bottom:0">
             <!-- <p>Footer</p> -->
         </div>
@@ -239,6 +268,7 @@ function searchfunction(params) {
             processData : false,
             data: dataimg,
         }).done(showresults);
+    $('#reportar').show();
 };
 
 function showmessage(ims) {
@@ -267,5 +297,29 @@ function reportfunction(params) {
             data: dataimg,
         }).done(showmessage);
 };
+function reportarperro(){
+
+     $('#reportar').show();
+     
+}
     </script>
+    <br/>
+    <div id="reportar" style="display: none">
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <label id="paso4">
+                        ¿Tu perro no aparece en los resultados?
+                        <br/>
+                        Reportalo como perdido aquí
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="container p-3 my-3 bg-muted text-white" id="wrapper">
+            <button class="btn btn-success" onclick="reportfunction()" type="button">
+                Reportar
+            </button>
+        </div>
+    </div>
 </html>
