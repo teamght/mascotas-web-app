@@ -109,6 +109,14 @@
 #reportar{
     text-align: center;
 }
+#spinner{
+    display: none;
+    width: 3rem;
+    height: 3rem;
+}
+
+
+
                             </style>
                         </link>
                     </link>
@@ -184,6 +192,13 @@
                 Vaciar
             </button>
         </div>
+
+        <div class="d-flex justify-content-center" id="divspinner">
+            <div class="spinner-border" role="status" id="spinner">
+              <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
         <div class="container p-3 my-3 bg-dark text-white" id="wrapper">
             Resultados
         </div>
@@ -256,6 +271,7 @@ function showresults(ims) {
 }  
     
 function searchfunction(params) {
+    $('#divspinner #spinner').show();
     clearfunction();
     var dataimg = new FormData();
     dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
@@ -267,8 +283,13 @@ function searchfunction(params) {
             processType : false,
             processData : false,
             data: dataimg,
-        }).done(showresults);
+        }).done(function(ims){
+            showresults(ims);
+            $('#divspinner #spinner').hide();
+
+        });
     $('#reportar').show();
+    
 };
 
 function showmessage(ims) {
@@ -277,6 +298,7 @@ function showmessage(ims) {
 }  
 
 function reportfunction(params) {
+    
     clearfunction();
     var dataimg = new FormData();
 
