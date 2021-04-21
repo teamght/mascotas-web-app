@@ -240,9 +240,12 @@
 
 function clearfunction() {
     document.getElementById("results-list").innerHTML="";
-    document.getElementById("imgslot").src = "";
-    $("imgslot-wrapper").hide();
-}    
+}
+
+function hidePreviewImageCropped() {
+    $("#imgslot").attr("src","")
+    $("#imgslot-wrapper").hide();
+}
 
 function showresults(ims) {
 
@@ -276,12 +279,13 @@ function showresults(ims) {
     }
 
     document.getElementById("imgslot").src = "data:image/png;base64," + result_variable["imagen_recortada"];
-    $("imgslot-wrapper").show();
+    $("#imgslot-wrapper").show();
 }  
     
 function searchfunction(params) {
     $('#divspinner #spinner').show();
     clearfunction();
+    hidePreviewImageCropped();
     var dataimg = new FormData();
     dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
     $.ajax({
@@ -312,12 +316,11 @@ function reportfunction(params) {
     var dataimg = new FormData();
 
     var inputdesc = document.getElementById('descripcion').value;
-    dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
+    dataimg.append('img', dataURItoBlob($("#imgslot")[0].src))
 
     // aca se agrega la descripcion del input
     dataimg.append('inputdesc',inputdesc)
 
-    dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
     $.ajax({
             url: "/reportar",
             type:"POST",
