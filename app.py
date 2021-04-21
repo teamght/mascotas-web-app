@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 from src.util import ENDPOINT_TENSORFLOW_MODEL,DB_URI
-from src.application import obtener_mascotas_parecidas, reportar_mascota_desaparecida,eliminar_archivos_temporales
+from src.application import obtener_imagen_recortada, obtener_mascotas_parecidas, reportar_mascota_desaparecida,eliminar_archivos_temporales
 from datetime import datetime
 import json
 from flask_mongoengine import MongoEngine
 from skimage.io import imread
 import os
+import base64
 import random
 
 port = int(os.environ.get("PORT", 5000))
@@ -43,16 +44,27 @@ def search_func():
         
         current_date = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S.%f')[:-3]
         nombre_imagen_a_predecir = './static/image_{}.jpg'.format(current_date)
+        nombre_imagen_recortada = './static/image_crop_{}.jpg'.format(current_date)
         if request.method == 'POST':
             file = request.files['img']
             file.save(nombre_imagen_a_predecir)
         
-        respuesta = obtener_mascotas_parecidas(nombre_imagen_a_predecir)
-
+        flag = obtener_imagen_recortada(nombre_imagen_a_predecir, nombre_imagen_recortada)
+        if flag == False:
+            return jsonify('Hubo un error. Volver a ingresar la imagen.')
+        respuesta = obtener_mascotas_parecidas(nombre_imagen_recortada)
         
+        with open(nombre_imagen_recortada, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+        respuesta["imagen_recortada"] = encoded_string
+        
+        eliminar_archivos_temporales(nombre_imagen_a_predecir)
+        eliminar_archivos_temporales(nombre_imagen_recortada)
     except Exception as e:
         print('Hubo un error en la búsqueda de mascota: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
+        eliminar_archivos_temporales(nombre_imagen_a_predecir)
+        eliminar_archivos_temporales(nombre_imagen_recortada)
         return jsonify('Hubo un error. Volver a ingresar la imagen.')
     
     print('Fin de búsqueda de mascota: {}'.format(datetime.now()))
@@ -93,7 +105,6 @@ def reportar_func():
         print('Hubo un error. {}'.format(e))
         eliminar_archivos_temporales(nombre_imagen_a_predecir)
         return jsonify('Hubo un error. Volver a reportar desaparición.')
-
 
     print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
     return jsonify(respuesta)

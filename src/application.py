@@ -1,12 +1,36 @@
+from .util import ENDPOINT_DOG_FACE_CROPPER, ENDPOINT_TENSORFLOW_MODEL, REPOSITORIO_DE_IMAGENES_PUBLICAS, ENDPOINT_REPORTAR_MASCOTA
 import numpy as np
 import json
 import requests
 import os
-from .util import ENDPOINT_TENSORFLOW_MODEL, REPOSITORIO_DE_IMAGENES_PUBLICAS, ENDPOINT_REPORTAR_MASCOTA
+import base64
+
+def obtener_imagen_recortada(nombre_imagen, nombre_imagen_recortada):
+    print('obtener_imagen_recortada')
+    try:
+        # Recortar imagen
+        file_imagen = open(nombre_imagen,'rb')
+        files = {'upload_file': file_imagen}
+        url = ENDPOINT_DOG_FACE_CROPPER
+
+        response = requests.post(url, files=files)
+        
+        # Guardar bytecode como imagen
+        imgdata = base64.b64decode(json.loads(response.text)['img'])
+        with open(nombre_imagen_recortada, 'wb') as f:
+            f.write(imgdata)
+        
+        file_imagen.close()
+        return True
+    except Exception as e:
+        print(e)
+        file_imagen.close()
+        return False
 
 def obtener_mascotas_parecidas(nombre_imagen):
     print('obtener_mascotas_parecidas')
     try:
+        # Predecir perros
         file_imagen = open(nombre_imagen,'rb')
         files = {'upload_file': file_imagen}
         url = ENDPOINT_TENSORFLOW_MODEL
@@ -19,13 +43,11 @@ def obtener_mascotas_parecidas(nombre_imagen):
         print('Predicción: {}'.format(predictions))
         
         file_imagen.close()
-        eliminar_archivos_temporales(nombre_imagen)
         
         return predictions
     except Exception as e:
         print(e)
         file_imagen.close()
-        eliminar_archivos_temporales(nombre_imagen)
         return None
 
 def reportar_mascota_desaparecida(nombre_imagen):
@@ -41,13 +63,11 @@ def reportar_mascota_desaparecida(nombre_imagen):
         print('Respuesta: {}'.format(respuesta))
         
         file_imagen.close()
-        #eliminar_archivos_temporales(nombre_imagen)
         
         return respuesta
     except Exception as e:
         print(e)
         file_imagen.close()
-        #eliminar_archivos_temporales(nombre_imagen)
         return None
 
 def eliminar_archivos_temporales(filename):
