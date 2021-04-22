@@ -58,7 +58,8 @@ def reportar_mascota_desaparecida(nombre_imagen):
 
         response = requests.post(url, files=files)
         print('Respuesta: {}'.format(response.text))
-        respuesta = json.loads(response.text)
+        respuesta = json.loads(response.text)['imagen']
+        #respuesta = response.text
 
         print('Respuesta: {}'.format(respuesta))
         
