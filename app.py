@@ -9,7 +9,7 @@ import os
 import base64
 import random
 
-port = int(os.environ.get("PORT", 5000))
+port = int(os.environ.get("PORT", 5001))
 
 app = Flask(__name__)
 
@@ -36,6 +36,7 @@ def index():
 
 @app.route('/search', methods=['GET','POST'])
 def search_func():
+    dict_rta = {}
     fecha_busqueda = datetime.now()
     print('Inicio de búsqueda de mascota: {}'.format(fecha_busqueda))
     try:
@@ -53,10 +54,24 @@ def search_func():
         if flag == False:
             return jsonify('Hubo un error. Volver a ingresar la imagen.')
         respuesta = obtener_mascotas_parecidas(nombre_imagen_recortada)
+
         
+        for key,value in respuesta.items():    
+            resp_mascota = Mascota.objects(file_name=str(value['rutastatic'][0])).first()
+            
+            if resp_mascota:
+                dict_rta[key] = {'rutas':value['rutas'],
+                                'caracteristicas':resp_mascota.caracteristicas,
+                                'distancia':resp_mascota.distancia}
+            else:
+                dict_rta[key] = {'rutas':value['rutas'],
+                                'caracteristicas':'',
+                                'distancia':''}
+
+
         with open(nombre_imagen_recortada, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-        respuesta["imagen_recortada"] = encoded_string
+        dict_rta["imagen_recortada"] = encoded_string
         
         eliminar_archivos_temporales(nombre_imagen_a_predecir)
         eliminar_archivos_temporales(nombre_imagen_recortada)
@@ -68,7 +83,7 @@ def search_func():
         return jsonify('Hubo un error. Volver a ingresar la imagen.')
     
     print('Fin de búsqueda de mascota: {}'.format(datetime.now()))
-    return jsonify(respuesta)
+    return jsonify(dict_rta)
 
 @app.route('/reportar', methods=['POST'])
 def reportar_func():
@@ -96,7 +111,7 @@ def reportar_func():
         mascota = Mascota(caracteristicas=inputdesc,
                          distancia=dist,
                          img_ndarray=str(img_ndarray),
-                         file_name=nombre_imagen_a_predecir)
+                         file_name=respuesta)
         mascota.save()
         eliminar_archivos_temporales(nombre_imagen_a_predecir)
         
@@ -107,7 +122,7 @@ def reportar_func():
         return jsonify('Hubo un error. Volver a reportar desaparición.')
 
     print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
-    return jsonify(respuesta)
+    return jsonify('Se logró registrar mascota como desaparecida.')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)
