@@ -37,7 +37,7 @@ def obtener_mascotas_parecidas(nombre_imagen):
 
         response = requests.post(url, files=files)
         print('Respuesta de la red neuronal: {}'.format(response.text))
-        respuesta = response.text.replace('/static/', REPOSITORIO_DE_IMAGENES_PUBLICAS)
+        respuesta = response.text.replace('"/static/', ('"' + REPOSITORIO_DE_IMAGENES_PUBLICAS))
         predictions = json.loads(respuesta)
 
         print('Predicción: {}'.format(predictions))
