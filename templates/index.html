@@ -268,7 +268,8 @@ function showresults(ims) {
         result_i = result_variable[key];
         console.log(result_i);
         if (result_i != undefined) {
-            var element = result_i.rutas[0];
+            //var element = result_i.rutas[0];
+            var element = "data:image/png;base64," + result_i.rutas;
             console.log(element);
             distancia = distancia_.replace('DISTANCIA', result_i.distancia)
             caracteristicas = caracteristicas_.replace('CARACTERISTICA', result_i.caracteristicas)

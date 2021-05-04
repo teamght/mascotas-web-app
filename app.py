@@ -57,17 +57,20 @@ def search_func():
 
         
         for key,value in respuesta.items():    
-            resp_mascota = Mascota.objects(file_name=str(value['rutastatic'][0])).first()
+            #resp_mascota = Mascota.objects(file_name=str(value['image'])).first()
             
-            if resp_mascota:
-                dict_rta[key] = {'rutas':value['rutas'],
-                                'caracteristicas':resp_mascota.caracteristicas,
-                                'distancia':resp_mascota.distancia}
-            else:
-                dict_rta[key] = {'rutas':value['rutas'],
-                                'caracteristicas':'',
-                                'distancia':''}
-
+            #if resp_mascota:
+            #    dict_rta[key] = {'rutas':value['image'],
+            #                    'caracteristicas':resp_mascota['caracteristicas'],
+            #                    'distancia':resp_mascota['distancia']}
+            #else:
+            #    dict_rta[key] = {'rutas':value['image'],
+            #                    'caracteristicas':'',
+            #                    'distancia':''}
+            dict_rta[key] = {'rutas':value['image'],
+                            'caracteristicas':value['caracteristicas'],
+                            'distancia':value['distancia']}
+            
 
         with open(nombre_imagen_recortada, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
