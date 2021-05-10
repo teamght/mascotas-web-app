@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
-from src.util import ENDPOINT_TENSORFLOW_MODEL,DB_URI
+import pymongo
+from src.util import ENDPOINT_TENSORFLOW_MODEL, DB_URI, DB_NAME, DB_COLECCION
 from src.application import obtener_imagen_recortada, obtener_mascotas_parecidas, reportar_mascota_desaparecida,eliminar_archivos_temporales
 from datetime import datetime
 import json
@@ -9,25 +10,13 @@ import os
 import base64
 import random
 
-port = int(os.environ.get("PORT", 5001))
+port = int(os.environ.get("PORT", 5000))
 
 app = Flask(__name__)
 
-app.config['MONGODB_HOST'] = DB_URI
-
-db = MongoEngine(app)
-
-class Mascota(db.Document):
-    caracteristicas = db.StringField()
-    distancia = db.StringField()
-    img_ndarray = db.StringField()
-    file_name = db.StringField()
-
-    def to_json(self):
-        return {'caracteristicas':self.caracteristicas,
-                'distancia':self.distancia,
-                'img_ndarray':self.img_ndarray,
-                'file_name':self.file_name}
+# MongoDB
+client = pymongo.MongoClient(DB_URI)
+db = client[DB_NAME]
 
 @app.route('/')
 @app.route('/index')
@@ -44,16 +33,19 @@ def search_func():
             os.mkdir('./static/')
         
         current_date = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S.%f')[:-3]
-        nombre_imagen_a_predecir = './static/image_{}.jpg'.format(current_date)
+        #nombre_imagen_a_predecir = './static/image_{}.jpg'.format(current_date)
         nombre_imagen_recortada = './static/image_crop_{}.jpg'.format(current_date)
-        if request.method == 'POST':
-            file = request.files['img']
-            file.save(nombre_imagen_a_predecir)
+        #if request.method == 'POST':
+        #    file = request.files['img']
+        #    file.save(nombre_imagen_a_predecir)
+        data = request.files['img']
         
-        flag = obtener_imagen_recortada(nombre_imagen_a_predecir, nombre_imagen_recortada)
+        flag, img_recortada = obtener_imagen_recortada(data, nombre_imagen_recortada)
+        print('img_recortada')
+        print(type(img_recortada))
         if flag == False:
             return jsonify('Hubo un error. Volver a ingresar la imagen.')
-        respuesta = obtener_mascotas_parecidas(nombre_imagen_recortada)
+        respuesta = obtener_mascotas_parecidas(img_recortada)
 
         
         for key,value in respuesta.items():    
@@ -72,17 +64,18 @@ def search_func():
                             'distancia':value['distancia']}
             
 
-        with open(nombre_imagen_recortada, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-        dict_rta["imagen_recortada"] = encoded_string
+        #with open(nombre_imagen_recortada, "rb") as image_file:
+        #    encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+        #dict_rta["imagen_recortada"] = encoded_string
+        dict_rta["imagen_recortada"] = base64.b64encode(img_recortada).decode("utf-8")
         
-        eliminar_archivos_temporales(nombre_imagen_a_predecir)
-        eliminar_archivos_temporales(nombre_imagen_recortada)
+        #eliminar_archivos_temporales(nombre_imagen_a_predecir)
+        #eliminar_archivos_temporales(nombre_imagen_recortada)
     except Exception as e:
         print('Hubo un error en la búsqueda de mascota: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
-        eliminar_archivos_temporales(nombre_imagen_a_predecir)
-        eliminar_archivos_temporales(nombre_imagen_recortada)
+        #eliminar_archivos_temporales(nombre_imagen_a_predecir)
+        #eliminar_archivos_temporales(nombre_imagen_recortada)
         return jsonify('Hubo un error. Volver a ingresar la imagen.')
     
     print('Fin de búsqueda de mascota: {}'.format(datetime.now()))
@@ -100,32 +93,41 @@ def reportar_func():
         nombre_imagen_a_predecir = './static/image_{}.jpg'.format(current_date)
         
         #Aca se agrega la descripcion del input
-        inputdesc = request.form.get('inputdesc')
+        caracteristicas = request.form.get('inputdesc')
 
         file = request.files['img']
         file.save(nombre_imagen_a_predecir)
-        respuesta = reportar_mascota_desaparecida(nombre_imagen_a_predecir)
+        flag, dict_respuesta = reportar_mascota_desaparecida(nombre_imagen_a_predecir)
+
+        if not flag:
+            print('Hubo un error. {}'.format(e))
+            return {'mensaje':'Hubo un error. Volver a reportar desaparición.'}
         #
         # Guardar en base de datos
         #
         #Genero un valor random para la distancia
-        dist = str(random.randint(0,999))+' km.'
-        img_ndarray = (imread(nombre_imagen_a_predecir) / 255.0).tostring()
-        mascota = Mascota(caracteristicas=inputdesc,
-                         distancia=dist,
-                         img_ndarray=str(img_ndarray),
-                         file_name=respuesta)
-        mascota.save()
+        distancia = str(random.randint(0,999))+' km.'
+        
+        with open(nombre_imagen_a_predecir, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+        
+        db[DB_COLECCION].insert_one({
+                    'image':encoded_string, 
+                    'file_name':dict_respuesta['file_name'],
+                    'label':dict_respuesta['label'],
+                    'caracteristicas':caracteristicas,
+                    'distancia':distancia})
+            
         eliminar_archivos_temporales(nombre_imagen_a_predecir)
         
     except Exception as e:
         print('Hubo un error al reportar mascota desaparecida: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
         eliminar_archivos_temporales(nombre_imagen_a_predecir)
-        return jsonify('Hubo un error. Volver a reportar desaparición.')
+        return {'mensaje':'Hubo un error. Volver a reportar desaparición.'}
 
     print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
-    return jsonify('Se logró registrar mascota como desaparecida.')
+    return {'mensaje':'Se logró registrar mascota como desaparecida.'}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

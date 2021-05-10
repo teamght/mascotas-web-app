@@ -7,3 +7,4 @@ scikit-image
 gunicorn
 requests
 flask_mongoengine
+pymongo

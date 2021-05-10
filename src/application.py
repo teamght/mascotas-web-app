@@ -3,35 +3,38 @@ import numpy as np
 import json
 import requests
 import os
+import io
 import base64
+from PIL import Image
 
-def obtener_imagen_recortada(nombre_imagen, nombre_imagen_recortada):
+def obtener_imagen_recortada(data, nombre_imagen_recortada):
     print('obtener_imagen_recortada')
     try:
         # Recortar imagen
-        file_imagen = open(nombre_imagen,'rb')
+        file_imagen = data
         files = {'upload_file': file_imagen}
         url = ENDPOINT_DOG_FACE_CROPPER
 
         response = requests.post(url, files=files)
-        
+        print('respuesta')
+        print(type(json.loads(response.text)['img']))
         # Guardar bytecode como imagen
         imgdata = base64.b64decode(json.loads(response.text)['img'])
-        with open(nombre_imagen_recortada, 'wb') as f:
-            f.write(imgdata)
-        
-        file_imagen.close()
-        return True
+        print(type(imgdata))
+
+        print('nombre_imagen_recortada')
+        #with open(nombre_imagen_recortada, 'wb') as f:
+        #    f.write(imgdata)
+        return True, imgdata
     except Exception as e:
         print(e)
-        file_imagen.close()
-        return False
+        return False, None
 
-def obtener_mascotas_parecidas(nombre_imagen):
+def obtener_mascotas_parecidas(image_bytes):
     print('obtener_mascotas_parecidas')
     try:
         # Predecir perros
-        file_imagen = open(nombre_imagen,'rb')
+        file_imagen = image_bytes
         files = {'upload_file': file_imagen}
         url = ENDPOINT_TENSORFLOW_MODEL
 
@@ -42,12 +45,9 @@ def obtener_mascotas_parecidas(nombre_imagen):
 
         print('Predicción: {}'.format(predictions))
         
-        file_imagen.close()
-        
         return predictions
     except Exception as e:
         print(e)
-        file_imagen.close()
         return None
 
 def reportar_mascota_desaparecida(nombre_imagen):
@@ -58,18 +58,17 @@ def reportar_mascota_desaparecida(nombre_imagen):
 
         response = requests.post(url, files=files)
         print('Respuesta: {}'.format(response.text))
-        respuesta = json.loads(response.text)['imagen']
-        #respuesta = response.text
+        respuesta = json.loads(response.text)
 
         print('Respuesta: {}'.format(respuesta))
         
         file_imagen.close()
         
-        return respuesta
+        return True, respuesta
     except Exception as e:
         print(e)
         file_imagen.close()
-        return None
+        return False, None
 
 def eliminar_archivos_temporales(filename):
     try:
