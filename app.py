@@ -42,32 +42,47 @@ def search_func():
     fecha_busqueda = datetime.now()
     print('Inicio de búsqueda de mascota: {}'.format(fecha_busqueda))
     try:
-        data = request.files['img']
+        data = request.json
+        if data is None:
+            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
+        if not 'imagen' in data:
+            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
         
-        flag, img_recortada = obtener_imagen_recortada(data)
+        bytes_imagen = data['imagen']
+        geolocalizacion = data['geolocalizacion']
+        
+        flag, bytes_imagen_recortada = obtener_imagen_recortada(bytes_imagen)
+        
         print('img_recortada')
         print(type(img_recortada))
         if flag == False:
-            return jsonify('Hubo un error. Volver a ingresar la imagen.')
+            return jsonify('Hubo un error. Ingresar una nueva imagen.')
 
-        dict_respuesta["imagen_recortada"] = base64.b64encode(img_recortada).decode("utf-8")
+        dict_respuesta["imagen_recortada"] = base64.b64encode(bytes_imagen_recortada).decode("utf-8")
         
-        flag, respuesta = obtener_mascotas_parecidas(img_recortada)
+        flag, respuesta = obtener_mascotas_parecidas(dict_respuesta["imagen_recortada"], geolocalizacion)
         if flag == False:
-            return jsonify('Hubo un error al mostrar mascotas. Volver a ingresar la imagen.')
+            dict_respuesta['codigo'] = 404
+            dict_respuesta['mensaje'] = 'Hubo un error al mostrar mascotas. Volver a ingresar la imagen.'
+            return jsonify(dict_respuesta)
         
         if 'parecidos' in respuesta:
-            for key,value in respuesta['parecidos'].items():    
+            for key,value in respuesta['parecidos'].items():
                 dict_respuesta[key] = {'rutas':value['image'],
                                         'caracteristicas':value['caracteristicas'],
-                                        'distancia':value['distancia']}
+                                        'ubicacion':value['ubicacion'],
+                                        'label':value['label'],
+                                        'distancia':value['distancia']
+                                        }
 
         dict_respuesta['codigo'] = respuesta['codigo']
         dict_respuesta['mensaje'] = respuesta['mensaje']
     except Exception as e:
         print('Hubo un error en la búsqueda de mascota: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
-        return jsonify('Hubo un error. Volver a ingresar la imagen.')
+        dict_respuesta['codigo'] = 503
+        dict_respuesta['mensaje'] = 'Hubo un error. Volver a ingresar la imagen.'
+        return jsonify(dict_respuesta)
     
     print('Fin de búsqueda de mascota: {}'.format(datetime.now()))
     return jsonify(dict_respuesta)
@@ -82,10 +97,15 @@ def reportar_func():
         if not os.path.exists('./static/'):
             os.mkdir('./static/')
         
-        #Aca se agrega la descripcion del input
-        caracteristicas = request.form.get('inputdesc')
-
-        data = request.files['img']
+        data = request.json
+        if data is None:
+            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
+        if not 'imagen' in data:
+            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
+        
+        bytes_imagen = data['imagen']
+        caracteristicas = data['caracteristicas']
+        geolocalizacion = data['geolocalizacion']
 
         current_date = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S.%f')[:-3]
         nombre_imagen = 'image_{}.jpg'.format(current_date)
@@ -95,12 +115,12 @@ def reportar_func():
         print(file_path)
 
         with open(file_path, 'wb') as f:
-            f.write(data.read())
+            f.write(base64.b64decode(bytes_imagen))
 
         #
         # Registrar en memoria la imagen reportada
         #
-        flag, dict_respuesta = reportar_mascota_desaparecida(file_path)
+        flag, dict_respuesta = reportar_mascota_desaparecida(bytes_imagen)
         ## Respuesta variable dict_respuesta:
         # dict_respuesta['file_name']
         # dict_respuesta['label']
@@ -122,14 +142,12 @@ def reportar_func():
         #
         # Guardar en base de datos
         #
-        # Genero un valor random para la distancia
-        distancia = str(random.randint(0,999))+' km.'
         file_name = dict_respuesta['file_name']
         label = dict_respuesta['label']
         with open(file_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
         
-        flag, respuesta = mongodb.registrar_mascota_reportada(encoded_string=encoded_string, full_file_name=full_file_name, image_path=file_name, label=label, caracteristicas=caracteristicas, distancia=distancia)
+        flag, respuesta = mongodb.registrar_mascota_reportada(encoded_string=encoded_string, full_file_name=full_file_name, image_path=file_name, label=label, caracteristicas=caracteristicas, ubicacion=geolocalizacion)
         if not flag:
             dict_respuesta['mensaje'] = "Hubo un error. Volver a ingresar la imagen."
             return dict_respuesta
@@ -138,15 +156,13 @@ def reportar_func():
 
         eliminar_archivos_temporales(file_path)
 
-        return json.dumps(dict_respuesta)
+        print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
+        return jsonify(dict_respuesta)
     except Exception as e:
         print('Hubo un error al reportar mascota desaparecida: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
         eliminar_archivos_temporales(file_path)
         return {'mensaje':'Hubo un error. Volver a reportar desaparición.'}
-
-    #print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
-    #return {'mensaje':'Se logró registrar mascota como desaparecida.'}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

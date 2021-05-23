@@ -217,20 +217,21 @@
         </div>
     </body>
     <script>
-        // document.getElementById("div1").innerHTML += "<h1>New text!</h1>"
+    
+function getByteString(dataURI) {
+    return dataURI.split(',')[1];
+}
 
-
-    function dataURItoBlob(dataURI) {
+function dataURItoBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
     var byteString;
     if (dataURI.split(',')[0].indexOf('base64') >= 0)
-        byteString = atob(dataURI.split(',')[1]);
+        byteString = atob(getByteString(dataURI));
     else
-        byteString = unescape(dataURI.split(',')[1]);
+        byteString = unescape(getByteString(dataURI));
 
     // separate out the mime component
     var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
     // write the bytes of the string to a typed array
     var ia = new Uint8Array(byteString.length);
     for (var i = 0; i < byteString.length; i++) {
@@ -252,7 +253,7 @@ function hidePreviewImageCropped() {
 function showresults(ims) {
 
     console.log(ims)
-        
+    
     top_='<div class="card" id="cards"><div class="card-body"><img src="' 
     bot_='" id="res_img"></div>'
     caracteristicas_='<div class="card-body">CARACTERISTICA</div>'
@@ -289,21 +290,31 @@ function searchfunction(params) {
     $('#divspinner #spinner').show();
     clearfunction();
     hidePreviewImageCropped();
-    var dataimg = new FormData();
-    dataimg.append('img', dataURItoBlob($("#img-upload")[0].src));
+    
+    /**
+     * Geolocalización
+     * "x": longitude, "y": latitude
+     */
+    var geolocalizacion = {"x": -40.82706832885742, "y": -62.97184753417969};
+
+    var jsonDataMascota = JSON.stringify({
+        "imagen": getByteString($("#img-upload")[0].src),
+        "geolocalizacion": geolocalizacion,
+    })
     $.ajax({
-            //url: "/search",
-            url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotasBuscar?",
-            type:"POST",
-            cache : false,
-            contentType : false,
-            processType : false,
-            processData : false,
-            data: dataimg,
+            url: "/search",
+            //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotasBuscar?",
+            type: "POST",
+            cache: false,
+            contentType: 'application/json',
+            processType: false,
+            processData: false,
+            data: jsonDataMascota,
         }).done(function(ims){
             showresults(ims);
+            if(ims['codigo'] != 200)
+                showmessage(ims);
             $('#divspinner #spinner').hide();
-
         });
     $('#reportar').show();
     
@@ -317,29 +328,33 @@ function showmessage(ims) {
 function reportfunction(params) {
     
     clearfunction();
-    var dataimg = new FormData();
 
-    var inputdesc = document.getElementById('descripcion').value;
-    dataimg.append('img', dataURItoBlob($("#imgslot")[0].src))
+    /**
+     * Geolocalización
+     * "x": longitude, "y": latitude
+     */
+    var geolocalizacion = {"x": -40.82706832885742, "y": -62.97184753417969};
 
-    // aca se agrega la descripcion del input
-    dataimg.append('inputdesc',inputdesc)
-
+    var caracteristicas = document.getElementById('descripcion').value;
+    var jsonDataMascota = JSON.stringify({
+        "imagen": getByteString($("#imgslot")[0].src),
+        "caracteristicas": caracteristicas,
+        "geolocalizacion": geolocalizacion
+    })
+    
     $.ajax({
-            //url: "/reportar",
-            url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotaReportar?",
-            type:"POST",
-            cache : false,
-            contentType : false,
-            processType : false,
-            processData : false,
-            data: dataimg,
+            url: "/reportar",
+            //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotaReportar?",
+            type: "POST",
+            cache: false,
+            contentType: 'application/json',
+            processType: false,
+            processData: false,
+            data: jsonDataMascota,
         }).done(showmessage);
 };
 function reportarperro(){
-
-     $('#reportar').show();
-     
+    $('#reportar').show();
 }
     </script>
     <br/>

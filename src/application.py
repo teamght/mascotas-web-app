@@ -13,10 +13,7 @@ def obtener_imagen_recortada(data_imagen):
         # Recortar imagen
         if ENDPOINT_DOG_FACE_CROPPER:
             files = {'upload_file': data_imagen}
-            response = requests.post(ENDPOINT_DOG_FACE_CROPPER, files=files)
-
-            print('Respuesta: {}'.format(type(json.loads(response.text)['img'])))
-            
+            response = requests.post(ENDPOINT_DOG_FACE_CROPPER, json=files)
             imagen_bytes = base64.b64decode(json.loads(response.text)['img'])
             print('API de recorte e identificación de rostro de perro retornó: {}'.format(type(imagen_bytes)))
 
@@ -26,16 +23,16 @@ def obtener_imagen_recortada(data_imagen):
                 return False, None
         return False, 'No se ha inicializado variable de entorno ENDPOINT_DOG_FACE_CROPPER'
     except Exception as e:
-        print(e)
+        print('Error: {}'.format(e))
         return False, None
 
-def obtener_mascotas_parecidas(image_bytes):
+def obtener_mascotas_parecidas(image_bytes, geolocalizacion):
     print('obtener_mascotas_parecidas')
     try:
         # Predecir perros
         if ENDPOINT_TENSORFLOW_MODEL:
             files = {'upload_file': image_bytes}
-            response = requests.post(ENDPOINT_TENSORFLOW_MODEL, files=files)
+            response = requests.post(ENDPOINT_TENSORFLOW_MODEL, json=files)
 
             print('Respuesta de la red neuronal: {}'.format(response.text))
             predictions = json.loads(response.text)
@@ -48,21 +45,18 @@ def obtener_mascotas_parecidas(image_bytes):
         print(e)
         return None
 
-def reportar_mascota_desaparecida(nombre_imagen):
+def reportar_mascota_desaparecida(image_bytes):
     try:
         if ENDPOINT_REPORTAR_MASCOTA:
-            file_imagen = open(nombre_imagen,'rb')
-            files = {'upload_file': file_imagen}
-            response = requests.post(ENDPOINT_REPORTAR_MASCOTA, files=files)
+            files = {'upload_file': image_bytes}
+            response = requests.post(ENDPOINT_REPORTAR_MASCOTA, json=files)
             print('Respuesta: {}'.format(response.text))
             respuesta = json.loads(response.text)
             
-            file_imagen.close()
             return True, respuesta
         return False, 'No se ha inicializado variable de entorno ENDPOINT_REPORTAR_MASCOTA'
     except Exception as e:
         print(e)
-        file_imagen.close()
         return False, None
 
 def eliminar_archivos_temporales(filename):
