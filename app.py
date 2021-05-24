@@ -4,13 +4,10 @@ import os
 import json
 import base64
 
-import random
 from datetime import datetime
-
 
 from azure.storage.blob import BlockBlobService
 
-import pymongo
 from src.util import ACCOUNT_NAME, ACCOUNT_KEY, CONTAINER_NAME, ENDPOINT_TENSORFLOW_MODEL, DB_URI, DB_NAME, DB_COLECCION
 from src.mongodb_config import MongoDB_Config
 from src.application import obtener_imagen_recortada, obtener_mascotas_parecidas, reportar_mascota_desaparecida,eliminar_archivos_temporales
@@ -53,8 +50,8 @@ def search_func():
         
         flag, bytes_imagen_recortada = obtener_imagen_recortada(bytes_imagen)
         
-        print('img_recortada')
-        print(type(img_recortada))
+        print('bytes_imagen_recortada')
+        print(type(bytes_imagen_recortada))
         if flag == False:
             return jsonify('Hubo un error. Ingresar una nueva imagen.')
 
