@@ -12,7 +12,7 @@ def obtener_imagen_recortada(data_imagen):
     try:
         # Recortar imagen
         if ENDPOINT_DOG_FACE_CROPPER:
-            files = {'upload_file': data_imagen}
+            files = {'imagen_bytes': data_imagen}
             response = requests.post(ENDPOINT_DOG_FACE_CROPPER, json=files)
             imagen_bytes = base64.b64decode(json.loads(response.text)['img'])
             print('API de recorte e identificación de rostro de perro retornó: {}'.format(type(imagen_bytes)))
@@ -31,7 +31,7 @@ def obtener_mascotas_parecidas(image_bytes, geolocalizacion):
     try:
         # Predecir perros
         if ENDPOINT_TENSORFLOW_MODEL:
-            files = {'upload_file': image_bytes}
+            files = {'imagen_bytes': image_bytes, 'geolocalizacion': geolocalizacion}
             response = requests.post(ENDPOINT_TENSORFLOW_MODEL, json=files)
 
             print('Respuesta de la red neuronal: {}'.format(response.text))
@@ -45,10 +45,13 @@ def obtener_mascotas_parecidas(image_bytes, geolocalizacion):
         print(e)
         return None
 
-def reportar_mascota_desaparecida(image_bytes):
+def reportar_mascota_desaparecida(image_bytes, geolocalizacion, caracteristicas, fecha_de_perdida):
     try:
         if ENDPOINT_REPORTAR_MASCOTA:
-            files = {'upload_file': image_bytes}
+            files = {'imagen_bytes': image_bytes, 
+                     'geolocalizacion': geolocalizacion, 
+                     'caracteristicas':caracteristicas,
+                     'fecha_de_perdida': fecha_de_perdida}
             response = requests.post(ENDPOINT_REPORTAR_MASCOTA, json=files)
             print('Respuesta: {}'.format(response.text))
             respuesta = json.loads(response.text)

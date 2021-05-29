@@ -1,15 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 
 import os
-import json
 import base64
 
 from datetime import datetime
 
-from azure.storage.blob import BlockBlobService
-
-from src.util import ACCOUNT_NAME, ACCOUNT_KEY, CONTAINER_NAME, ENDPOINT_TENSORFLOW_MODEL, DB_URI, DB_NAME, DB_COLECCION
-from src.mongodb_config import MongoDB_Config
 from src.application import obtener_imagen_recortada, obtener_mascotas_parecidas, reportar_mascota_desaparecida,eliminar_archivos_temporales
 
 
@@ -17,16 +12,6 @@ port = int(os.environ.get("PORT", 5001))
 
 app = Flask(__name__)
 
-# MongoDB
-mongodb = MongoDB_Config()
-
-#
-# Configuración de cuenta de Azure
-#
-block_blob_service = BlockBlobService(
-    account_name=ACCOUNT_NAME,
-    account_key=ACCOUNT_KEY
-)
 
 @app.route('/')
 @app.route('/index')
@@ -69,7 +54,9 @@ def search_func():
                                         'caracteristicas':value['caracteristicas'],
                                         'ubicacion':value['ubicacion'],
                                         'label':value['label'],
-                                        'distancia':value['distancia']
+                                        'distancia':value['distancia'],
+                                        'fecha_perdida':value['fecha_perdida'],
+                                        'timestamp_perdida':value['timestamp_perdida']
                                         }
 
         dict_respuesta['codigo'] = respuesta['codigo']
@@ -103,62 +90,26 @@ def reportar_func():
         bytes_imagen = data['imagen']
         caracteristicas = data['caracteristicas']
         geolocalizacion = data['geolocalizacion']
-
-        current_date = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S.%f')[:-3]
-        nombre_imagen = 'image_{}.jpg'.format(current_date)
-        file_path = './static' + '/' + nombre_imagen
-
-        print(current_date)
-        print(file_path)
-
-        with open(file_path, 'wb') as f:
-            f.write(base64.b64decode(bytes_imagen))
+        fecha_de_perdida = '25/05/2020'
 
         #
         # Registrar en memoria la imagen reportada
         #
-        flag, dict_respuesta = reportar_mascota_desaparecida(bytes_imagen)
+        flag, dict_respuesta = reportar_mascota_desaparecida(bytes_imagen, geolocalizacion, caracteristicas, fecha_de_perdida)
         ## Respuesta variable dict_respuesta:
         # dict_respuesta['file_name']
         # dict_respuesta['label']
         # dict_respuesta['full_file_name']
+        # dict_respuesta['mensaje']
 
         if not flag:
-            dict_respuesta['mensaje'] = "Hubo un error. Volver a ingresar la imagen."
             return dict_respuesta
         
-        #
-        # Guardar imagen en Azure Storage
-        #
-        # Nombre con el que se guardará en Azure Storage
-        full_file_name = dict_respuesta['full_file_name']
-        print(full_file_name)
-        print(file_path)
-        block_blob_service.create_blob_from_path(CONTAINER_NAME, full_file_name, file_path)
-
-        #
-        # Guardar en base de datos
-        #
-        file_name = dict_respuesta['file_name']
-        label = dict_respuesta['label']
-        with open(file_path, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-        
-        flag, respuesta = mongodb.registrar_mascota_reportada(encoded_string=encoded_string, full_file_name=full_file_name, image_path=file_name, label=label, caracteristicas=caracteristicas, ubicacion=geolocalizacion)
-        if not flag:
-            dict_respuesta['mensaje'] = "Hubo un error. Volver a ingresar la imagen."
-            return dict_respuesta
-        
-        dict_respuesta['mensaje'] = respuesta
-
-        eliminar_archivos_temporales(file_path)
-
         print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
         return jsonify(dict_respuesta)
     except Exception as e:
         print('Hubo un error al reportar mascota desaparecida: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
-        eliminar_archivos_temporales(file_path)
         return {'mensaje':'Hubo un error. Volver a reportar desaparición.'}
 
 if __name__ == '__main__':

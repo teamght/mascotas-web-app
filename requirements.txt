@@ -6,6 +6,3 @@ Flask-Cors
 scikit-image
 gunicorn
 requests
-flask_mongoengine
-pymongo
-azure-storage-blob==2.1.0
