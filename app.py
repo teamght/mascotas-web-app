@@ -100,10 +100,11 @@ def reportar_func():
         # dict_respuesta['file_name']
         # dict_respuesta['label']
         # dict_respuesta['full_file_name']
+        # dict_respuesta['codigo']
         # dict_respuesta['mensaje']
 
         if not flag:
-            return dict_respuesta
+            return jsonify(dict_respuesta)
         
         print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
         return jsonify(dict_respuesta)
