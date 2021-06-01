@@ -5,7 +5,7 @@ import base64
 
 from datetime import datetime
 
-from src.application import obtener_imagen_recortada, obtener_mascotas_parecidas, reportar_mascota_desaparecida,eliminar_archivos_temporales
+from src.application import obtener_mascotas_parecidas, reportar_mascota_desaparecida
 
 
 port = int(os.environ.get("PORT", 5001))
@@ -33,24 +33,11 @@ def search_func():
         bytes_imagen = data['imagen']
         geolocalizacion = data['geolocalizacion']
         
-        flag, bytes_imagen_recortada = obtener_imagen_recortada(bytes_imagen)
+        flag, respuesta = obtener_mascotas_parecidas(bytes_imagen, geolocalizacion)
         
-        print('bytes_imagen_recortada')
-        print(type(bytes_imagen_recortada))
-        if flag == False:
-            return jsonify('Hubo un error. Ingresar una nueva imagen.')
-
-        dict_respuesta["imagen_recortada"] = base64.b64encode(bytes_imagen_recortada).decode("utf-8")
-        
-        flag, respuesta = obtener_mascotas_parecidas(dict_respuesta["imagen_recortada"], geolocalizacion)
-        if flag == False:
-            dict_respuesta['codigo'] = 404
-            dict_respuesta['mensaje'] = 'Hubo un error al mostrar mascotas. Volver a ingresar la imagen.'
-            return jsonify(dict_respuesta)
-        
-        if 'parecidos' in respuesta:
-            for key,value in respuesta['parecidos'].items():
-                dict_respuesta[key] = {'rutas':value['image'],
+        if 'resultados' in respuesta:
+            for key,value in respuesta['resultados'].items():
+                dict_respuesta[key] = {'image':value['image'],
                                         'caracteristicas':value['caracteristicas'],
                                         'ubicacion':value['ubicacion'],
                                         'label':value['label'],
@@ -58,7 +45,10 @@ def search_func():
                                         'fecha_perdida':value['fecha_perdida'],
                                         'timestamp_perdida':value['timestamp_perdida']
                                         }
-
+        
+        if 'imagen_recortada' in respuesta:
+            dict_respuesta["imagen_recortada"] = respuesta["imagen_recortada"]
+        
         dict_respuesta['codigo'] = respuesta['codigo']
         dict_respuesta['mensaje'] = respuesta['mensaje']
     except Exception as e:
@@ -82,6 +72,7 @@ def reportar_func():
             os.mkdir('./static/')
         
         data = request.json
+        
         if data is None:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
         if not 'imagen' in data:
