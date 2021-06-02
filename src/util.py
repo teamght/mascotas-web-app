@@ -3,10 +3,3 @@ import os
 ENDPOINT_TENSORFLOW_MODEL = os.environ.get('ENDPOINT_TENSORFLOW_MODEL')
 
 ENDPOINT_REPORTAR_MASCOTA = os.environ.get('ENDPOINT_REPORTAR_MASCOTA')
-
-
-
-ENDPOINT_TENSORFLOW_MODEL = 'http://localhost:5000/predict?'
-
-ENDPOINT_REPORTAR_MASCOTA = 'http://localhost:5000/report?'
-
