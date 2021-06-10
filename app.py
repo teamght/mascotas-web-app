@@ -5,6 +5,7 @@ import base64
 
 from datetime import datetime
 
+from src.mascota_reportar_request import MascotaReportartRequest
 from src.application import obtener_mascotas_parecidas, reportar_mascota_desaparecida
 
 
@@ -81,12 +82,20 @@ def reportar_func():
         bytes_imagen = data['imagen']
         caracteristicas = data['caracteristicas']
         geolocalizacion = data['geolocalizacion']
-        fecha_de_perdida = '25/05/2020'
+        fecha_de_perdida = data['fecha_de_perdida'] if 'fecha_de_perdida' in data else '25/05/2020'
+        barrio_nombre = data['barrio_nombre'] if 'barrio_nombre' in data else None
+        genero = data['genero'] if 'genero' in data else None # Hembra (0) / Macho (1)
+        perro_nombre = data['perro_nombre'] if 'perro_nombre' in data else None
+        comportamiento = data['comportamiento'] if 'comportamiento' in data else None
+        datos_adicionales = data['datos_adicionales'] if 'datos_adicionales' in data else None
 
+        mascota_desaparecida = MascotaReportartRequest(geolocalizacion, bytes_imagen, caracteristicas, fecha_de_perdida, 
+                                            barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales)
+        
         #
         # Registrar en memoria la imagen reportada
         #
-        flag, dict_respuesta = reportar_mascota_desaparecida(bytes_imagen, geolocalizacion, caracteristicas, fecha_de_perdida)
+        flag, dict_respuesta = reportar_mascota_desaparecida(mascota_desaparecida)
         ## Respuesta variable dict_respuesta:
         # dict_respuesta['file_name']
         # dict_respuesta['label']
