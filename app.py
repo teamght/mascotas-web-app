@@ -38,7 +38,8 @@ def search_func():
         
         if 'resultados' in respuesta:
             for key,value in respuesta['resultados'].items():
-                dict_respuesta[key] = {'image':value['image'],
+                dict_respuesta[key] = {'id':value['id'],
+                                        'image':value['image'],
                                         'caracteristicas':value['caracteristicas'],
                                         'ubicacion':value['ubicacion'],
                                         'label':value['label'],
