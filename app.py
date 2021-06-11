@@ -7,7 +7,7 @@ from datetime import datetime
 
 from src.mascota_reportar_request import MascotaReportartRequest
 from src.application import obtener_mascotas_parecidas, reportar_mascota_desaparecida
-from src.util import mostrar_cadena_vacia
+from src.util import mostrar_cadena_vacia, existe_campo_en_diccionario
 
 
 port = int(os.environ.get("PORT", 5001))
@@ -39,7 +39,7 @@ def search_func():
         
         if 'resultados' in respuesta:
             for key,value in respuesta['resultados'].items():
-                dict_respuesta[key] = {'id':value['id'],
+                dict_respuesta[key] = {'id':existe_campo_en_diccionario(value, 'id'),
                                         'image':value['image'],
                                         'caracteristicas':value['caracteristicas'],
                                         'ubicacion':value['ubicacion'],
@@ -47,11 +47,11 @@ def search_func():
                                         'distancia':value['distancia'],
                                         'fecha_de_perdida':value['fecha_perdida'],
                                         'timestamp_perdida':value['timestamp_perdida'],
-                                        'barrio_nombre':mostrar_cadena_vacia(value['barrio_nombre']) if 'barrio_nombre' in value else '', 
-                                        'genero':mostrar_cadena_vacia(value['genero']) if 'genero' in value else '',
-                                        'perro_nombre':mostrar_cadena_vacia(value['nombre']) if 'nombre' in value else '', 
-                                        'comportamiento':mostrar_cadena_vacia(value['comportamiento']) if 'comportamiento' in value else '',
-                                        'datos_adicionales':mostrar_cadena_vacia(value['datos_adicionales']) if 'datos_adicionales' in value else ''
+                                        'barrio_nombre':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'barrio_nombre')),
+                                        'genero':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'genero')),
+                                        'perro_nombre':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'nombre')), 
+                                        'comportamiento':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'comportamiento')),
+                                        'datos_adicionales':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'datos_adicionales'))
                                         }
         
         if 'imagen_recortada' in respuesta:
