@@ -415,11 +415,13 @@ function reportfunction(params) {
     var perro_nombre = document.getElementById('perro_nombre').value;
     var comportamiento = document.getElementById('comportamiento').value;
     var datos_adicionales = document.getElementById('datos_adicionales').value;
+    var genero = document.querySelector('input[name="gridRadios"]:checked').value;
     var jsonDataMascota = JSON.stringify({
         "imagen": getByteString($("#imgslot")[0].src),
         "caracteristicas": caracteristicas,
         "fecha_de_perdida": fecha_de_perdida,
         "barrio_nombre": barrio_nombre,
+        "genero": genero,
         "perro_nombre": perro_nombre,
         "comportamiento": comportamiento,
         "datos_adicionales": datos_adicionales,
