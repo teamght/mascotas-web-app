@@ -7,6 +7,7 @@ from datetime import datetime
 
 from src.mascota_reportar_request import MascotaReportartRequest
 from src.application import obtener_mascotas_parecidas, reportar_mascota_desaparecida
+from src.util import mostrar_cadena_vacia
 
 
 port = int(os.environ.get("PORT", 5001))
@@ -44,8 +45,13 @@ def search_func():
                                         'ubicacion':value['ubicacion'],
                                         'label':value['label'],
                                         'distancia':value['distancia'],
-                                        'fecha_perdida':value['fecha_perdida'],
-                                        'timestamp_perdida':value['timestamp_perdida']
+                                        'fecha_de_perdida':value['fecha_perdida'],
+                                        'timestamp_perdida':value['timestamp_perdida'],
+                                        'barrio_nombre':mostrar_cadena_vacia(value['barrio_nombre']) if 'barrio_nombre' in value else '', 
+                                        'genero':mostrar_cadena_vacia(value['genero']) if 'genero' in value else '',
+                                        'perro_nombre':mostrar_cadena_vacia(value['nombre']) if 'nombre' in value else '', 
+                                        'comportamiento':mostrar_cadena_vacia(value['comportamiento']) if 'comportamiento' in value else '',
+                                        'datos_adicionales':mostrar_cadena_vacia(value['datos_adicionales']) if 'datos_adicionales' in value else ''
                                         }
         
         if 'imagen_recortada' in respuesta:
