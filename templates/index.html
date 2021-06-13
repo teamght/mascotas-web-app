@@ -407,7 +407,7 @@ function searchfunction(params) {
         objDataMascota["imagen_3"] = getByteString($("#img-upload-3")[0].src)
     }
     
-    var jsonDataMascota = JSON.stringify({objDataMascota})
+    var jsonDataMascota = JSON.stringify(objDataMascota)
     $.ajax({
             url: "/search",
             //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotasBuscar?",

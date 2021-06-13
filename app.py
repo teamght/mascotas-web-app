@@ -27,12 +27,19 @@ def search_func():
     print('Inicio de búsqueda de mascota: {}'.format(fecha_busqueda))
     try:
         data = request.json
+        print(data.keys())
         if data is None:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
-        if not 'imagen' in data:
+        if not 'imagen_1' in data:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
         
-        bytes_imagen = data['imagen']
+        bytes_imagen = [data['imagen_1']]
+
+        if 'imagen_2' in data:
+            bytes_imagen.append(data['imagen_2'])
+        if 'imagen_3' in data:
+            bytes_imagen.append(data['imagen_3'])
+        
         geolocalizacion = data['geolocalizacion']
         
         flag, respuesta = obtener_mascotas_parecidas(bytes_imagen, geolocalizacion)
