@@ -39,12 +39,12 @@
             }
         
         });
-        function readURL(input) {
+        function readURL(input, idImagenUpload) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 
                 reader.onload = function (e) {
-                    $('#img-upload').attr('src', e.target.result);
+                    $(idImagenUpload).attr('src', e.target.result);
                 }
                 
                 reader.readAsDataURL(input.files[0]);
@@ -53,8 +53,14 @@
         }
 
         $("#imgInp").change(function(){
-            readURL(this);
-        });     
+            readURL(this, '#img-upload');
+        });
+        $("#imgInp_2").change(function(){
+            readURL(this, '#img-upload-2');
+        });
+        $("#imgInp_3").change(function(){
+            readURL(this, '#img-upload-3');
+        });
     });
                             </script>
                             <style>
@@ -140,6 +146,7 @@
                     <label>
                         Inserte aquí una imágen en la que se vea la cara del perro que quiera buscar
                     </label>
+                    <!-- Primera imagen -->
                     <div class="input-group">
                         <span class="input-group-btn">
                             <span class="btn btn-dark btn-lg">
@@ -149,6 +156,26 @@
                         </span>
                     </div>
                     <img id="img-upload"/>
+                    <!-- Segunda imagen -->
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <span class="btn btn-dark btn-lg">
+                                <input id="imgInp_2" type="file">
+                                </input>
+                            </span>
+                        </span>
+                    </div>
+                    <img id="img-upload-2"/>
+                    <!-- Tercera imagen -->
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <span class="btn btn-dark btn-lg">
+                                <input id="imgInp_3" type="file">
+                                </input>
+                            </span>
+                        </span>
+                    </div>
+                    <img id="img-upload-3"/>
                 </div>
             </div>
         </div>
@@ -371,10 +398,16 @@ function searchfunction(params) {
      */
     var geolocalizacion = {"x": -40.82706832885742, "y": -62.97184753417969};
 
-    var jsonDataMascota = JSON.stringify({
-        "imagen": getByteString($("#img-upload")[0].src),
-        "geolocalizacion": geolocalizacion,
-    })
+    var objDataMascota = {"geolocalizacion": geolocalizacion}
+    objDataMascota["imagen_1"] = getByteString($("#img-upload")[0].src)
+    if($("#img-upload-2")[0].src.length > 0){
+        objDataMascota["imagen_2"] = getByteString($("#img-upload-2")[0].src)
+    }
+    if($("#img-upload-3")[0].src.length > 0){
+        objDataMascota["imagen_3"] = getByteString($("#img-upload-3")[0].src)
+    }
+    
+    var jsonDataMascota = JSON.stringify({objDataMascota})
     $.ajax({
             url: "/search",
             //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotasBuscar?",
