@@ -88,7 +88,7 @@
     display: block;
 }
 
-#img-upload{
+.img-upload{
     width: 300px;
  
 }
@@ -155,7 +155,7 @@
                             </span>
                         </span>
                     </div>
-                    <img id="img-upload"/>
+                    <img id="img-upload" class="img-upload" />
                     <!-- Segunda imagen -->
                     <div class="input-group">
                         <span class="input-group-btn">
@@ -165,7 +165,7 @@
                             </span>
                         </span>
                     </div>
-                    <img id="img-upload-2"/>
+                    <img id="img-upload-2" class="img-upload" />
                     <!-- Tercera imagen -->
                     <div class="input-group">
                         <span class="input-group-btn">
@@ -175,7 +175,7 @@
                             </span>
                         </span>
                     </div>
-                    <img id="img-upload-3"/>
+                    <img id="img-upload-3" class="img-upload" />
                 </div>
             </div>
         </div>
@@ -289,7 +289,8 @@
             </button>
         </div>
         <div class="d-flex justify-content-center" id="imgslot-wrapper" name="imgslot-wrapper">
-            <img id="imgslot" src=""/>
+            <div class="row row-cols-3" id="results-imgslot-list">
+            </div>
         </div>
         <div class="d-flex justify-content-center" id="divspinner">
             <div class="spinner-border" id="spinner" role="status">
@@ -338,7 +339,7 @@ function clearfunction() {
 }
 
 function hidePreviewImageCropped() {
-    $("#imgslot").attr("src","")
+    document.getElementById("results-imgslot-list").innerHTML = "";
     $("#imgslot-wrapper").hide();
 }
 
@@ -383,7 +384,16 @@ function showresults(ims) {
         }
     }
 
-    document.getElementById("imgslot").src = "data:image/png;base64," + result_variable["imagen_recortada"];
+    var imagenes_recortadas = result_variable["imagenes_recortadas"]
+    if(imagenes_recortadas.length > 0){
+        var htmlContenido = '<img id="imgslot" width="300" src=""/><img id="imgslot-1" width="500" src=""/><img id="imgslot-2" width="500" src=""/>'
+        document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
+        
+        document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
+        for(var i=1; i<imagenes_recortadas.length; i++) {
+            document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+        }
+    }
     $("#imgslot-wrapper").show();
 }  
     
@@ -399,13 +409,14 @@ function searchfunction(params) {
     var geolocalizacion = {"x": -40.82706832885742, "y": -62.97184753417969};
 
     var objDataMascota = {"geolocalizacion": geolocalizacion}
-    objDataMascota["imagen_1"] = getByteString($("#img-upload")[0].src)
+    lista_imagenes_bytes = [getByteString($("#img-upload")[0].src)]
     if($("#img-upload-2")[0].src.length > 0){
-        objDataMascota["imagen_2"] = getByteString($("#img-upload-2")[0].src)
+        lista_imagenes_bytes.push(getByteString($("#img-upload-2")[0].src))
     }
     if($("#img-upload-3")[0].src.length > 0){
-        objDataMascota["imagen_3"] = getByteString($("#img-upload-3")[0].src)
+        lista_imagenes_bytes.push(getByteString($("#img-upload-3")[0].src))
     }
+    objDataMascota["lista_imagenes_bytes"] = lista_imagenes_bytes
     
     var jsonDataMascota = JSON.stringify(objDataMascota)
     $.ajax({

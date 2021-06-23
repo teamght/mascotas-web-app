@@ -2,18 +2,18 @@ from .util import ENDPOINT_TENSORFLOW_MODEL, ENDPOINT_REPORTAR_MASCOTA
 import json
 import requests
 
-def obtener_mascotas_parecidas(image_bytes, geolocalizacion):
+def obtener_mascotas_parecidas(lista_imagen_bytes, geolocalizacion):
     print('obtener_mascotas_parecidas')
     try:
         # Predecir perros
         if ENDPOINT_TENSORFLOW_MODEL:
-            files = {'imagen_bytes': image_bytes, 'geolocalizacion': geolocalizacion}
+            files = {'lista_imagenes_bytes': lista_imagen_bytes, 'geolocalizacion': geolocalizacion}
             response = requests.post(ENDPOINT_TENSORFLOW_MODEL, json=files)
 
-            print('Respuesta de la red neuronal: {}'.format(response.text))
+            #print('Respuesta de la red neuronal: {}'.format(response.text))
             predictions = json.loads(response.text)
 
-            print('Predicción: {}'.format(predictions))
+            #print('Predicción: {}'.format(predictions))
             if predictions['codigo'] == 200:
                 return True, predictions
         

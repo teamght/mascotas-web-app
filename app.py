@@ -27,22 +27,20 @@ def search_func():
     print('Inicio de búsqueda de mascota: {}'.format(fecha_busqueda))
     try:
         data = request.json
-        print(data.keys())
+        
         if data is None:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
-        if not 'imagen_1' in data:
+        if not 'lista_imagenes_bytes' in data:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
         
-        bytes_imagen = [data['imagen_1']]
+        lista_imagenes_bytes = data['lista_imagenes_bytes']
 
-        if 'imagen_2' in data:
-            bytes_imagen.append(data['imagen_2'])
-        if 'imagen_3' in data:
-            bytes_imagen.append(data['imagen_3'])
+        if len(lista_imagenes_bytes) == 0:
+            return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400}
         
         geolocalizacion = data['geolocalizacion']
         
-        flag, respuesta = obtener_mascotas_parecidas(bytes_imagen, geolocalizacion)
+        flag, respuesta = obtener_mascotas_parecidas(lista_imagenes_bytes, geolocalizacion)
         
         if 'resultados' in respuesta:
             for key,value in respuesta['resultados'].items():
@@ -61,8 +59,8 @@ def search_func():
                                         'datos_adicionales':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'datos_adicionales'))
                                         }
         
-        if 'imagen_recortada' in respuesta:
-            dict_respuesta["imagen_recortada"] = respuesta["imagen_recortada"]
+        if 'imagenes_recortadas' in respuesta:
+            dict_respuesta["imagenes_recortadas"] = respuesta["imagenes_recortadas"]
         
         dict_respuesta['codigo'] = respuesta['codigo']
         dict_respuesta['mensaje'] = respuesta['mensaje']
