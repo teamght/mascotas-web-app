@@ -457,7 +457,6 @@ function reportfunction(params) {
     var datos_adicionales = document.getElementById('datos_adicionales').value;
     var genero = document.querySelector('input[name="gridRadios"]:checked').value;
     objDataMascota = {
-        "imagen": getByteString($("#imgslot")[0].src),
         "caracteristicas": caracteristicas,
         "fecha_de_perdida": fecha_de_perdida,
         "barrio_nombre": barrio_nombre,
@@ -467,6 +466,16 @@ function reportfunction(params) {
         "datos_adicionales": datos_adicionales,
         "geolocalizacion": geolocalizacion
     }
+    
+    lista_imagenes_bytes = [getByteString($("#imgslot")[0].src)]
+    if($("#imgslot-1").val().length > 0){
+        lista_imagenes_bytes.push($("#imgslot-1").val())
+    }
+    if($("#imgslot-2").val().length > 0){
+        lista_imagenes_bytes.push($("#imgslot-2").val())
+    }
+    objDataMascota["lista_imagenes_bytes"] = lista_imagenes_bytes
+    
     /**
      * Datos del dueño
      * identificador: Número de teléfono u otro identificador

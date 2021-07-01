@@ -38,7 +38,7 @@ def obtener_mascotas_parecidas(mascota_desaparecida, flag_bytes_url):
 def reportar_mascota_desaparecida(mascota_desaparecida):
     try:
         if ENDPOINT_REPORTAR_MASCOTA:
-            files = {'imagen_bytes': mascota_desaparecida.imagen_bytes, 
+            files = {'lista_imagenes_bytes': mascota_desaparecida.lista_imagenes_bytes, 
                      'geolocalizacion': mascota_desaparecida.geolocalizacion_reportado, 
                      'caracteristicas': mascota_desaparecida.caracteristicas,
                      'fecha_de_perdida': mascota_desaparecida.fecha_de_perdida,
@@ -46,7 +46,8 @@ def reportar_mascota_desaparecida(mascota_desaparecida):
                      'genero': mascota_desaparecida.genero, 
                      'perro_nombre': mascota_desaparecida.perro_nombre, 
                      'comportamiento': mascota_desaparecida.comportamiento, 
-                     'datos_adicionales': mascota_desaparecida.datos_adicionales}
+                     'datos_adicionales': mascota_desaparecida.datos_adicionales,
+                     'dueno': {'identificador':mascota_desaparecida.dueno.identificador}}
             response = requests.post(ENDPOINT_REPORTAR_MASCOTA, json=files)
             print('Respuesta: {}'.format(response.text))
             respuesta = json.loads(response.text)

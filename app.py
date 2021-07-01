@@ -101,10 +101,10 @@ def reportar_func():
         
         if data is None:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
-        if not 'imagen' in data:
-            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
+        if not 'lista_imagenes_bytes' in data:
+            return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400}
         
-        bytes_imagen = data['imagen']
+        lista_imagenes_bytes = data['lista_imagenes_bytes']
         # Datos del dueño
         dueno = retornar_valor_campo_en_diccionario(data, 'dueno')
         if not dueno is None:
@@ -121,7 +121,7 @@ def reportar_func():
         comportamiento = data['comportamiento'] if 'comportamiento' in data else None
         datos_adicionales = data['datos_adicionales'] if 'datos_adicionales' in data else None
         
-        mascota_desaparecida = MascotaReportartRequest(mascota_dueno_datos, geolocalizacion, bytes_imagen, caracteristicas, fecha_de_perdida, 
+        mascota_desaparecida = MascotaReportartRequest(mascota_dueno_datos, geolocalizacion, lista_imagenes_bytes, caracteristicas, fecha_de_perdida, 
                                             barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales)
         
         #
