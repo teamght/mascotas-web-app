@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>
+            Proyecto Mascotas
+        </title>
+        <meta charset="utf-8">
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+                <meta content="width=device-width, initial-scale=1.0" name="viewport">
+                    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+                        </script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js">
+                        </script>
+                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js">
+                        </script>
+                        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" id="bootstrap-css" rel="stylesheet">
+                            <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js">
+                            </script>
+                            <script src="//code.jquery.com/jquery-1.11.1.min.js">
+                            </script>
+                            <script>
+                                $(document).ready( function() {
+        $(document).on('change', '.btn-file :file', function() {
+        var input = $(this),
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [label]);
+        });
+
+        $('.btn-file :file').on('fileselect', function(event, label) {
+            
+            var input = $(this).parents('.input-group').find(':text'),
+                log = label;
+            
+            if( input.length ) {
+                input.val(log);
+            } else {
+                if( log ) alert(log);
+            }
+        
+        });
+        function readURL(input, idImagenUpload) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function (e) {
+                    $(idImagenUpload).attr('src', e.target.result);
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+                
+            }
+        }
+
+        $("#imgInp").change(function(){
+            readURL(this, '#img-upload');
+        });
+        $("#imgInp_2").change(function(){
+            readURL(this, '#img-upload-2');
+        });
+        $("#imgInp_3").change(function(){
+            readURL(this, '#img-upload-3');
+        });
+    });
+                            </script>
+                            <style>
+                                .fakeimg {
+    height: 200px;
+    background: #aaa;
+  }
+  .btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.img-upload{
+    width: 300px;
+ 
+}
+#res_img{
+    width:200px
+}
+#wrapper{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+      }
+
+#result1{
+    /* width:335px; */
+    align-items: center;
+        justify-content: center;
+        /* display: flex; */
+}
+#cards{
+    align-items: center;
+    justify-content: center;
+}
+#reportar{
+    text-align: center;
+}
+#spinner{
+    display: none;
+    width: 3rem;
+    height: 3rem;
+}
+/* Radio button del formulario */
+#opcionHembra{
+  margin: 0px 10px;
+}
+                            </style>
+                        </link>
+                    </link>
+                </meta>
+            </meta>
+        </meta>
+    </head>
+    <body>
+        <div class="jumbotron text-center" style="margin-bottom:0">
+            <h1>
+                Proyecto Mascotas
+            </h1>
+        </div>
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <h2>
+                        Paso 1
+                    </h2>
+                    <label>
+                        Inserte aquí una imágen en la que se vea la cara del perro que quiera buscar
+                    </label>
+                    <!-- Primera imagen -->
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <span class="btn btn-dark btn-lg">
+                                <input id="imgInp" type="file">
+                                </input>
+                            </span>
+                        </span>
+                    </div>
+                    <img id="img-upload" class="img-upload" />
+                    <!-- Segunda imagen -->
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <span class="btn btn-dark btn-lg">
+                                <input id="imgInp_2" type="file">
+                                </input>
+                            </span>
+                        </span>
+                    </div>
+                    <img id="img-upload-2" class="img-upload" />
+                    <!-- Tercera imagen -->
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <span class="btn btn-dark btn-lg">
+                                <input id="imgInp_3" type="file">
+                                </input>
+                            </span>
+                        </span>
+                    </div>
+                    <img id="img-upload-3" class="img-upload" />
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <h2>
+                        Paso 2
+                    </h2>
+                    <label>
+                        Para poder identificarlo mejor, responda el siguiente formulario con los datos del perro perdido
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">
+                    Características físicas
+                </span>
+            </div>
+            <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="caracteristicas" placeholder="es blanco con una mancha marrón en el lomo, tiene la cola corta" type="text">
+            </input>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text" for="example-date-input" id="inputGroup-sizing-default">
+                    Fecha en la que se perdió
+                </span>
+            </div>
+            <input class="form-control" id="fecha_de_perdida" type="date" value="2021-06-10">
+            </input>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">
+                    Barrio en donde se perdió
+                </span>
+            </div>
+            <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="barrio_nombre" placeholder="Flores" type="text">
+            </input>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    La mascota es:
+                </span>
+                <div class="form-check form-check-inline" id="genero">
+                    <label class="form-check-label">
+                        <input checked="" class="form-check-input" id="opcionHembra" name="gridRadios" type="radio" value="0">
+                            Hembra
+                        </input>
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input checked="" class="form-check-input" id="opcionMacho" name="gridRadios" type="radio" value="1">
+                            Macho
+                        </input>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">
+                    Nombre del perro
+                </span>
+            </div>
+            <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="perro_nombre" placeholder="Roco" type="text">
+            </input>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">
+                    Comportamiento característico
+                </span>
+            </div>
+            <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="comportamiento" placeholder="es muy inquieto y glotón" type="text">
+            </input>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">
+                    Datos adicionales
+                </span>
+            </div>
+            <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="datos_adicionales" placeholder="tenía puesto un collar verde" type="text">
+            </input>
+        </div>
+        <br/>
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <h2>
+                        Paso 3
+                    </h2>
+                    <label>
+                        Presione el botón Buscar para empezar la búsqueda de perros parecidos que han sido reportados como perdidos y encontrados. Si quiere empezar de nuevo con otra foto y carácteristicas, presione Vaciar
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="container p-3 my-3 bg-muted text-white" id="wrapper">
+            <button class="btn btn-success" id="buscarperro" onclick="searchfunction()" type="button">
+                Buscar
+            </button>
+            <button class="btn btn-outline-success" onclick="clearfunction()" type="button">
+                Vaciar
+            </button>
+        </div>
+        <div class="d-flex justify-content-center" id="imgslot-wrapper" name="imgslot-wrapper">
+            <div class="row row-cols-3" id="results-imgslot-list">
+            </div>
+        </div>
+        <div class="d-flex justify-content-center" id="divspinner">
+            <div class="spinner-border" id="spinner" role="status">
+                <span class="sr-only">
+                    Loading...
+                </span>
+            </div>
+        </div>
+        <div class="container p-3 my-3 bg-dark text-white" id="wrapper">
+            Resultados
+        </div>
+        <div class="container">
+            <div class="row row-cols-3" id="results-list">
+            </div>
+        </div>
+        <div class="jumbotron text-center" id="footer" style="margin-bottom:0">
+            <!-- <p>Footer</p> -->
+        </div>
+    </body>
+    <script>
+        function getByteString(dataURI) {
+    return dataURI.split(',')[1];
+}
+
+function dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0)
+        byteString = atob(getByteString(dataURI));
+    else
+        byteString = unescape(getByteString(dataURI));
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ia], {type:mimeString});
+}
+
+function clearfunction() {
+    document.getElementById("results-list").innerHTML="";
+}
+
+function hidePreviewImageCropped() {
+    document.getElementById("results-imgslot-list").innerHTML = "";
+    $("#imgslot-wrapper").hide();
+}
+
+function showresults(ims) {
+
+    console.log(ims)
+    
+    top_='<div class="card" id="cards"><div class="card-body"><img src="' 
+    bot_='" id="res_img"></div>'
+    caracteristicas_='<div class="card-body">CARACTERISTICA</div>'
+    fecha_de_perdida_='<div class="card-body">FECHA_DE_PERDIDA</div>'
+    barrio_nombre_='<div class="card-body">BARRIO_NOMBRE</div>'
+    perro_nombre_='<div class="card-body">PERRO_NOMBRE</div>'
+    comportamiento_='<div class="card-body">COMPORTAMIENTO</div>'
+    datos_adicionales_='<div class="card-body">DATOS_ADICIONALES</div>'
+    distancia_='<div class="card-body">DISTANCIA</div>'
+    final_='</div>'
+    
+    //const is_tensorflow = false;
+    const is_tensorflow = true;
+
+    // result_variable={{ims | tojson}};
+    result_variable=ims ;
+    resultados = result_variable["resultados"]
+    if (resultados != undefined) {
+        for (var i=0; i < resultados.length; i++) {
+            result_i = resultados[i]
+            console.log(result_i);
+            var element = "data:image/png;base64," + result_i.image;
+            console.log(element);
+            distancia = distancia_.replace('DISTANCIA', (result_i.distancia != undefined ? result_i.distancia : ''))
+            caracteristicas = caracteristicas_.replace('CARACTERISTICA', (result_i.caracteristicas != undefined ? result_i.caracteristicas : ''))
+            fecha_de_perdida = fecha_de_perdida_.replace('FECHA_DE_PERDIDA', (result_i.fecha_de_perdida != undefined ? result_i.fecha_de_perdida : ''))
+            barrio_nombre = barrio_nombre_.replace('BARRIO_NOMBRE', (result_i.barrio_nombre != undefined ? result_i.barrio_nombre : ''))
+            perro_nombre = perro_nombre_.replace('PERRO_NOMBRE', (result_i.nombre != undefined ? result_i.nombre : ''))
+            comportamiento = comportamiento_.replace('COMPORTAMIENTO', (result_i.comportamiento != undefined ? result_i.comportamiento : ''))
+            datos_adicionales = datos_adicionales_.replace('DATOS_ADICIONALES', (result_i.datos_adicionales != undefined ? result_i.datos_adicionales : ''))
+            var dog_html = top_+element+bot_ + distancia + caracteristicas + fecha_de_perdida + barrio_nombre + perro_nombre + comportamiento + datos_adicionales+ final_;
+            console.log(dog_html);
+            document.getElementById("results-list").innerHTML += dog_html;
+        }
+    }
+
+    var imagenes_recortadas = result_variable["imagenes_recortadas"]
+    if(imagenes_recortadas.length > 0){
+        var htmlContenido = '<img id="imgslot" width="300" src=""/><img id="imgslot-1" width="500" src=""/><img id="imgslot-2" width="500" src=""/>'
+        document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
+        
+        document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
+        for(var i=1; i<imagenes_recortadas.length; i++) {
+            document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+        }
+    }
+    $("#imgslot-wrapper").show();
+}  
+    
+function searchfunction(params) {
+    $('#divspinner #spinner').show();
+    clearfunction();
+    hidePreviewImageCropped();
+    
+    /**
+     * Geolocalización
+     * "x": longitude, "y": latitude
+     */
+    var geolocalizacion = {"x": -40.82706832885742, "y": -62.97184753417969};
+    
+    var objDataMascota = {"geolocalizacion": geolocalizacion}
+    lista_imagenes_bytes = [getByteString($("#img-upload")[0].src)]
+    if($("#img-upload-2")[0].src.length > 0){
+        lista_imagenes_bytes.push(getByteString($("#img-upload-2")[0].src))
+    }
+    if($("#img-upload-3")[0].src.length > 0){
+        lista_imagenes_bytes.push(getByteString($("#img-upload-3")[0].src))
+    }
+    objDataMascota["lista_imagenes_bytes"] = lista_imagenes_bytes
+    
+    objDataMascota["caracteristicas"] = document.getElementById('caracteristicas').value;
+    objDataMascota["fecha_de_perdida"] = document.getElementById('fecha_de_perdida').value;
+    objDataMascota["barrio_nombre"] = document.getElementById('barrio_nombre').value;
+    objDataMascota["nombre"] = document.getElementById('perro_nombre').value;
+    objDataMascota["comportamiento"] = document.getElementById('comportamiento').value;
+    objDataMascota["datos_adicionales"] = document.getElementById('datos_adicionales').value;
+    objDataMascota["genero"] = document.querySelector('input[name="gridRadios"]:checked').value;
+    
+    /**
+     * Datos del dueño
+     * identificador: Número de teléfono u otro identificador
+     * contacto (opcional): Lista de teléfonos asociados a la mascota
+     */
+    var dueno = {"identificador":"+5491111111111"}
+    //var dueno = {"identificador":"+5491111111111", "contacto":["+5491111111111"]}
+    objDataMascota["dueno"] = dueno
+    
+    var jsonDataMascota = JSON.stringify(objDataMascota)
+    $.ajax({
+            url: "/search",
+            //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotasBuscar?",
+            type: "POST",
+            cache: false,
+            contentType: 'application/json',
+            processType: false,
+            processData: false,
+            data: jsonDataMascota,
+        }).done(function(ims){
+            showresults(ims);
+            if(ims['codigo'] != 200)
+                showmessage(ims);
+            $('#divspinner #spinner').hide();
+        });
+    $('#reportar').show();
+    
+};
+
+function showmessage(ims) {
+    console.log(ims)
+    document.getElementById("results-list").innerHTML = ims['mensaje'];
+}  
+
+function reportfunction(params) {
+    
+    clearfunction();
+
+    /**
+     * Geolocalización
+     * "x": longitude, "y": latitude
+     */
+    var geolocalizacion = {"x": -40.82706832885742, "y": -62.97184753417969};
+
+    var caracteristicas = document.getElementById('caracteristicas').value;
+    var fecha_de_perdida = document.getElementById('fecha_de_perdida').value;
+    var barrio_nombre = document.getElementById('barrio_nombre').value;
+    var perro_nombre = document.getElementById('perro_nombre').value;
+    var comportamiento = document.getElementById('comportamiento').value;
+    var datos_adicionales = document.getElementById('datos_adicionales').value;
+    var genero = document.querySelector('input[name="gridRadios"]:checked').value;
+    objDataMascota = {
+        "imagen": getByteString($("#imgslot")[0].src),
+        "caracteristicas": caracteristicas,
+        "fecha_de_perdida": fecha_de_perdida,
+        "barrio_nombre": barrio_nombre,
+        "genero": genero,
+        "nombre": perro_nombre,
+        "comportamiento": comportamiento,
+        "datos_adicionales": datos_adicionales,
+        "geolocalizacion": geolocalizacion
+    }
+    /**
+     * Datos del dueño
+     * identificador: Número de teléfono u otro identificador
+     * contacto (opcional): Lista de teléfonos asociados a la mascota
+     */
+    var dueno = {"identificador":"+5491111111111"}
+    objDataMascota["dueno"] = dueno
+    
+    var jsonDataMascota = JSON.stringify(objDataMascota)
+    
+    $.ajax({
+            url: "/reportar",
+            //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotaReportar?",
+            type: "POST",
+            cache: false,
+            contentType: 'application/json',
+            processType: false,
+            processData: false,
+            data: jsonDataMascota,
+        }).done(showmessage);
+};
+function reportarperro(){
+    $('#reportar').show();
+}
+    </script>
+    <br/>
+    <div id="reportar" style="display: none">
+        <div class="container" id="wrapper">
+            <div class="col-md-6">
+                <div class="lead">
+                    <label id="paso4">
+                        ¿Tu perro no aparece en los resultados?
+                        <br/>
+                        Reportalo como perdido aquí
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="container p-3 my-3 bg-muted text-white" id="wrapper">
+            <button class="btn btn-success" onclick="reportfunction()" type="button">
+                Reportar
+            </button>
+        </div>
+    </div>
+</html>

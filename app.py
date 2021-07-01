@@ -5,9 +5,9 @@ import base64
 
 from datetime import datetime
 
-from src.mascota_reportar_request import MascotaReportartRequest
+from src.mascota_reportar_request import MascotaDuenoRequest, MascotaEncontrarRequest, MascotaReportartRequest
 from src.application import obtener_mascotas_parecidas, reportar_mascota_desaparecida
-from src.util import mostrar_cadena_vacia, existe_campo_en_diccionario
+from src.util import mostrar_cadena_vacia, existe_campo_en_diccionario, retornar_valor_campo_en_diccionario
 
 
 port = int(os.environ.get("PORT", 5001))
@@ -20,6 +20,10 @@ app = Flask(__name__)
 def index():
     return render_template('index.html', title='Mascotas', ims={})
 
+@app.route('/index_bytes')
+def index_bytes():
+    return render_template('index_bytes.html', title='Mascotas', ims={})
+
 @app.route('/search', methods=['GET','POST'])
 def search_func():
     dict_respuesta = {}
@@ -30,34 +34,43 @@ def search_func():
         
         if data is None:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
-        if not 'lista_imagenes_bytes' in data:
+        if not 'lista_imagenes_bytes' in data and not 'lista_imagenes_url' in data:
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
         
-        lista_imagenes_bytes = data['lista_imagenes_bytes']
+        flag_bytes_url = 'url'
+        if 'lista_imagenes_bytes' in data:
+            lista_imagenes_bytes = data['lista_imagenes_bytes']
+            flag_bytes_url = 'bytes'
+        if 'lista_imagenes_url' in data:
+            lista_imagenes_bytes = data['lista_imagenes_url']
+            flag_bytes_url = 'url'
 
         if len(lista_imagenes_bytes) == 0:
             return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400}
         
-        geolocalizacion = data['geolocalizacion']
+        # Datos del dueño
+        dueno = retornar_valor_campo_en_diccionario(data, 'dueno')
+        if not dueno is None:
+            identificador = retornar_valor_campo_en_diccionario(data['dueno'], 'identificador')  # Número telefónico de la persona que reportó desaparición
+            contacto = retornar_valor_campo_en_diccionario(data['dueno'], 'contacto')  # Números de teléfonos asociados al perro desaparecido
+            mascota_dueno_datos = MascotaDuenoRequest(identificador, contacto)
         
-        flag, respuesta = obtener_mascotas_parecidas(lista_imagenes_bytes, geolocalizacion)
+        caracteristicas = data['caracteristicas']
+        geolocalizacion = data['geolocalizacion']
+        fecha_de_perdida = data['fecha_de_perdida'] if 'fecha_de_perdida' in data else '25/05/2020'
+        barrio_nombre = data['barrio_nombre'] if 'barrio_nombre' in data else None
+        genero = data['genero'] if 'genero' in data else None # Hembra (0) / Macho (1)
+        perro_nombre = data['nombre'] if 'nombre' in data else None
+        comportamiento = data['comportamiento'] if 'comportamiento' in data else None
+        datos_adicionales = data['datos_adicionales'] if 'datos_adicionales' in data else None
+        
+        mascota_desaparecida = MascotaEncontrarRequest(mascota_dueno_datos, geolocalizacion, lista_imagenes_bytes, caracteristicas, fecha_de_perdida, 
+                                            barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales)
+        
+        flag, respuesta = obtener_mascotas_parecidas(mascota_desaparecida, flag_bytes_url)
         
         if 'resultados' in respuesta:
-            for key,value in respuesta['resultados'].items():
-                dict_respuesta[key] = {'id':existe_campo_en_diccionario(value, 'id'),
-                                        'image':value['image'],
-                                        'caracteristicas':value['caracteristicas'],
-                                        'ubicacion':value['ubicacion'],
-                                        'label':value['label'],
-                                        'distancia':value['distancia'],
-                                        'fecha_de_perdida':value['fecha_perdida'],
-                                        'timestamp_perdida':value['timestamp_perdida'],
-                                        'barrio_nombre':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'barrio_nombre')),
-                                        'genero':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'genero')),
-                                        'perro_nombre':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'nombre')), 
-                                        'comportamiento':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'comportamiento')),
-                                        'datos_adicionales':mostrar_cadena_vacia(existe_campo_en_diccionario(value, 'datos_adicionales'))
-                                        }
+            dict_respuesta['resultados'] = respuesta['resultados']
         
         if 'imagenes_recortadas' in respuesta:
             dict_respuesta["imagenes_recortadas"] = respuesta["imagenes_recortadas"]
@@ -92,16 +105,23 @@ def reportar_func():
             return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
         
         bytes_imagen = data['imagen']
+        # Datos del dueño
+        dueno = retornar_valor_campo_en_diccionario(data, 'dueno')
+        if not dueno is None:
+            identificador = retornar_valor_campo_en_diccionario(data['dueno'], 'identificador')  # Número telefónico de la persona que reportó desaparición
+            contacto = retornar_valor_campo_en_diccionario(data['dueno'], 'contacto')  # Números de teléfonos asociados al perro desaparecido
+            mascota_dueno_datos = MascotaDuenoRequest(identificador, contacto)
+        
         caracteristicas = data['caracteristicas']
         geolocalizacion = data['geolocalizacion']
         fecha_de_perdida = data['fecha_de_perdida'] if 'fecha_de_perdida' in data else '25/05/2020'
         barrio_nombre = data['barrio_nombre'] if 'barrio_nombre' in data else None
         genero = data['genero'] if 'genero' in data else None # Hembra (0) / Macho (1)
-        perro_nombre = data['perro_nombre'] if 'perro_nombre' in data else None
+        perro_nombre = data['nombre'] if 'nombre' in data else None
         comportamiento = data['comportamiento'] if 'comportamiento' in data else None
         datos_adicionales = data['datos_adicionales'] if 'datos_adicionales' in data else None
-
-        mascota_desaparecida = MascotaReportartRequest(geolocalizacion, bytes_imagen, caracteristicas, fecha_de_perdida, 
+        
+        mascota_desaparecida = MascotaReportartRequest(mascota_dueno_datos, geolocalizacion, bytes_imagen, caracteristicas, fecha_de_perdida, 
                                             barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales)
         
         #

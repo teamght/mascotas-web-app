@@ -39,28 +39,6 @@
             }
         
         });
-        function readURL(input, idImagenUpload) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                
-                reader.onload = function (e) {
-                    $(idImagenUpload).attr('src', e.target.result);
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-                
-            }
-        }
-
-        $("#imgInp").change(function(){
-            readURL(this, '#img-upload');
-        });
-        $("#imgInp_2").change(function(){
-            readURL(this, '#img-upload-2');
-        });
-        $("#imgInp_3").change(function(){
-            readURL(this, '#img-upload-3');
-        });
     });
                             </script>
                             <style>
@@ -144,13 +122,13 @@
                         Paso 1
                     </h2>
                     <label>
-                        Inserte aquí una imágen en la que se vea la cara del perro que quiera buscar
+                        Inserte aquí al menos un link de la imágen en la que se vea la cara del perro que quiera buscar
                     </label>
                     <!-- Primera imagen -->
                     <div class="input-group">
                         <span class="input-group-btn">
-                            <span class="btn btn-dark btn-lg">
-                                <input id="imgInp" type="file">
+                            <span class="btn btn-dark btn-lg w-100">
+                                <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="imgInp" placeholder="http:// ..." type="text">
                                 </input>
                             </span>
                         </span>
@@ -159,8 +137,8 @@
                     <!-- Segunda imagen -->
                     <div class="input-group">
                         <span class="input-group-btn">
-                            <span class="btn btn-dark btn-lg">
-                                <input id="imgInp_2" type="file">
+                            <span class="btn btn-dark btn-lg w-100">
+                                <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="imgInp_2" placeholder="http:// ..." type="text">
                                 </input>
                             </span>
                         </span>
@@ -169,8 +147,8 @@
                     <!-- Tercera imagen -->
                     <div class="input-group">
                         <span class="input-group-btn">
-                            <span class="btn btn-dark btn-lg">
-                                <input id="imgInp_3" type="file">
+                            <span class="btn btn-dark btn-lg w-100">
+                                <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control" id="imgInp_3" placeholder="http:// ..." type="text">
                                 </input>
                             </span>
                         </span>
@@ -363,21 +341,20 @@ function showresults(ims) {
 
     // result_variable={{ims | tojson}};
     result_variable=ims ;
-    
-    for (var i=0; i < 18; i++) {
-        var key = "results" + (is_tensorflow ? "_tf" : "") + (i+1).toString();
-        result_i = result_variable[key];
-        console.log(result_i);
-        if (result_i != undefined) {
+    resultados = result_variable["resultados"]
+    if (resultados != undefined) {
+        for (var i=0; i < resultados.length; i++) {
+            result_i = resultados[i]
+            console.log(result_i);
             var element = "data:image/png;base64," + result_i.image;
             console.log(element);
-            distancia = distancia_.replace('DISTANCIA', result_i.distancia)
-            caracteristicas = caracteristicas_.replace('CARACTERISTICA', result_i.caracteristicas)
-            fecha_de_perdida = fecha_de_perdida_.replace('FECHA_DE_PERDIDA', result_i.fecha_de_perdida)
-            barrio_nombre = barrio_nombre_.replace('BARRIO_NOMBRE', result_i.barrio_nombre)
-            perro_nombre = perro_nombre_.replace('PERRO_NOMBRE', result_i.perro_nombre)
-            comportamiento = comportamiento_.replace('COMPORTAMIENTO', result_i.comportamiento)
-            datos_adicionales = datos_adicionales_.replace('DATOS_ADICIONALES', result_i.datos_adicionales)
+            distancia = distancia_.replace('DISTANCIA', (result_i.distancia != undefined ? result_i.distancia : ''))
+            caracteristicas = caracteristicas_.replace('CARACTERISTICA', (result_i.caracteristicas != undefined ? result_i.caracteristicas : ''))
+            fecha_de_perdida = fecha_de_perdida_.replace('FECHA_DE_PERDIDA', (result_i.fecha_de_perdida != undefined ? result_i.fecha_de_perdida : ''))
+            barrio_nombre = barrio_nombre_.replace('BARRIO_NOMBRE', (result_i.barrio_nombre != undefined ? result_i.barrio_nombre : ''))
+            perro_nombre = perro_nombre_.replace('PERRO_NOMBRE', (result_i.nombre != undefined ? result_i.nombre : ''))
+            comportamiento = comportamiento_.replace('COMPORTAMIENTO', (result_i.comportamiento != undefined ? result_i.comportamiento : ''))
+            datos_adicionales = datos_adicionales_.replace('DATOS_ADICIONALES', (result_i.datos_adicionales != undefined ? result_i.datos_adicionales : ''))
             var dog_html = top_+element+bot_ + distancia + caracteristicas + fecha_de_perdida + barrio_nombre + perro_nombre + comportamiento + datos_adicionales+ final_;
             console.log(dog_html);
             document.getElementById("results-list").innerHTML += dog_html;
@@ -385,13 +362,15 @@ function showresults(ims) {
     }
 
     var imagenes_recortadas = result_variable["imagenes_recortadas"]
-    if(imagenes_recortadas.length > 0){
-        var htmlContenido = '<img id="imgslot" width="300" src=""/><img id="imgslot-1" width="500" src=""/><img id="imgslot-2" width="500" src=""/>'
-        document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
-        
-        document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
-        for(var i=1; i<imagenes_recortadas.length; i++) {
-            document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+    if (imagenes_recortadas != undefined) {
+        if(imagenes_recortadas.length > 0){
+            var htmlContenido = '<img id="imgslot" width="300" src=""/><img id="imgslot-1" width="500" src=""/><img id="imgslot-2" width="500" src=""/>'
+            document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
+            
+            document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
+            for(var i=1; i<imagenes_recortadas.length; i++) {
+                document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+            }
         }
     }
     $("#imgslot-wrapper").show();
@@ -407,16 +386,33 @@ function searchfunction(params) {
      * "x": longitude, "y": latitude
      */
     var geolocalizacion = {"x": -40.82706832885742, "y": -62.97184753417969};
-
+    
     var objDataMascota = {"geolocalizacion": geolocalizacion}
-    lista_imagenes_bytes = [getByteString($("#img-upload")[0].src)]
-    if($("#img-upload-2")[0].src.length > 0){
-        lista_imagenes_bytes.push(getByteString($("#img-upload-2")[0].src))
+    lista_imagenes_url = [$("#imgInp").val()]
+    if($("#imgInp_2").val().length > 0){
+        lista_imagenes_url.push($("#imgInp_2").val())
     }
-    if($("#img-upload-3")[0].src.length > 0){
-        lista_imagenes_bytes.push(getByteString($("#img-upload-3")[0].src))
+    if($("#imgInp_3").val().length > 0){
+        lista_imagenes_url.push($("#imgInp_3").val())
     }
-    objDataMascota["lista_imagenes_bytes"] = lista_imagenes_bytes
+    objDataMascota["lista_imagenes_url"] = lista_imagenes_url
+    
+    objDataMascota["caracteristicas"] = document.getElementById('caracteristicas').value;
+    objDataMascota["fecha_de_perdida"] = document.getElementById('fecha_de_perdida').value;
+    objDataMascota["barrio_nombre"] = document.getElementById('barrio_nombre').value;
+    objDataMascota["nombre"] = document.getElementById('perro_nombre').value;
+    objDataMascota["comportamiento"] = document.getElementById('comportamiento').value;
+    objDataMascota["datos_adicionales"] = document.getElementById('datos_adicionales').value;
+    objDataMascota["genero"] = document.querySelector('input[name="gridRadios"]:checked').value;
+    
+    /**
+     * Datos del dueño
+     * identificador: Número de teléfono u otro identificador
+     * contacto (opcional): Lista de teléfonos asociados a la mascota
+     */
+    var dueno = {"identificador":"+5491111111111"}
+    //var dueno = {"identificador":"+5491111111111", "contacto":["+5491111111111"]}
+    objDataMascota["dueno"] = dueno
     
     var jsonDataMascota = JSON.stringify(objDataMascota)
     $.ajax({
@@ -460,17 +456,26 @@ function reportfunction(params) {
     var comportamiento = document.getElementById('comportamiento').value;
     var datos_adicionales = document.getElementById('datos_adicionales').value;
     var genero = document.querySelector('input[name="gridRadios"]:checked').value;
-    var jsonDataMascota = JSON.stringify({
+    objDataMascota = {
         "imagen": getByteString($("#imgslot")[0].src),
         "caracteristicas": caracteristicas,
         "fecha_de_perdida": fecha_de_perdida,
         "barrio_nombre": barrio_nombre,
         "genero": genero,
-        "perro_nombre": perro_nombre,
+        "nombre": perro_nombre,
         "comportamiento": comportamiento,
         "datos_adicionales": datos_adicionales,
         "geolocalizacion": geolocalizacion
-    })
+    }
+    /**
+     * Datos del dueño
+     * identificador: Número de teléfono u otro identificador
+     * contacto (opcional): Lista de teléfonos asociados a la mascota
+     */
+    var dueno = {"identificador":"+5491111111111"}
+    objDataMascota["dueno"] = dueno
+    
+    var jsonDataMascota = JSON.stringify(objDataMascota)
     
     $.ajax({
             url: "/reportar",
