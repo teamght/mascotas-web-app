@@ -12,7 +12,7 @@ def obtener_mascotas_parecidas(mascota_desaparecida, flag_bytes_url):
                      'fecha_de_perdida': mascota_desaparecida.fecha_de_perdida,
                      'barrio_nombre': mascota_desaparecida.barrio_nombre,
                      'genero': mascota_desaparecida.genero, 
-                     'perro_nombre': mascota_desaparecida.perro_nombre, 
+                     'nombre': mascota_desaparecida.nombre, 
                      'comportamiento': mascota_desaparecida.comportamiento, 
                      'datos_adicionales': mascota_desaparecida.datos_adicionales,
                      'dueno': {'identificador':mascota_desaparecida.dueno.identificador}}
@@ -44,7 +44,7 @@ def reportar_mascota_desaparecida(mascota_desaparecida):
                      'fecha_de_perdida': mascota_desaparecida.fecha_de_perdida,
                      'barrio_nombre': mascota_desaparecida.barrio_nombre,
                      'genero': mascota_desaparecida.genero, 
-                     'perro_nombre': mascota_desaparecida.perro_nombre, 
+                     'nombre': mascota_desaparecida.nombre, 
                      'comportamiento': mascota_desaparecida.comportamiento, 
                      'datos_adicionales': mascota_desaparecida.datos_adicionales,
                      'dueno': {'identificador':mascota_desaparecida.dueno.identificador}}
