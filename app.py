@@ -33,9 +33,9 @@ def search_func():
         data = request.json
         
         if data is None:
-            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
+            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400},400
         if not 'lista_imagenes_bytes' in data and not 'lista_imagenes_url' in data:
-            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
+            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400},400
         
         flag_bytes_url = 'url'
         if 'lista_imagenes_bytes' in data:
@@ -46,7 +46,7 @@ def search_func():
             flag_bytes_url = 'url'
 
         if len(lista_imagenes_bytes) == 0:
-            return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400}
+            return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400},400
         
         # Datos del dueño
         dueno = retornar_valor_campo_en_diccionario(data, 'dueno')
@@ -82,10 +82,10 @@ def search_func():
         print('Hubo un error. {}'.format(e))
         dict_respuesta['codigo'] = 503
         dict_respuesta['mensaje'] = 'Hubo un error. Volver a ingresar la imagen.'
-        return jsonify(dict_respuesta)
+        return jsonify(dict_respuesta),dict_respuesta['codigo']
     
     print('Fin de búsqueda de mascota: {}'.format(datetime.now()))
-    return jsonify(dict_respuesta)
+    return jsonify(dict_respuesta),200
 
 @app.route('/reportar', methods=['POST'])
 def reportar_func():
@@ -100,9 +100,9 @@ def reportar_func():
         data = request.json
         
         if data is None:
-            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400}
+            return {'mensaje':'Debe ingresar una imagen.', 'codigo': 400},400
         if not 'lista_imagenes_bytes' in data:
-            return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400}
+            return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400},400
         
         lista_imagenes_bytes = data['lista_imagenes_bytes']
         # Datos del dueño
@@ -136,14 +136,14 @@ def reportar_func():
         # dict_respuesta['mensaje']
 
         if not flag:
-            return jsonify(dict_respuesta)
+            return jsonify(dict_respuesta),200
         
         print('Fin de reportar mascota desaparecida: {}'.format(datetime.now()))
-        return jsonify(dict_respuesta)
+        return jsonify(dict_respuesta),200
     except Exception as e:
         print('Hubo un error al reportar mascota desaparecida: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
-        return {'mensaje':'Hubo un error. Volver a reportar desaparición.'}
+        return {'mensaje':'Hubo un error. Volver a reportar desaparición.'},400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)
