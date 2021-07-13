@@ -346,7 +346,7 @@ function showresults(ims) {
         for (var i=0; i < resultados.length; i++) {
             result_i = resultados[i]
             console.log(result_i);
-            var element = "data:image/png;base64," + result_i.image;
+            var element = "data:image/png;base64," + result_i.list_encoded_string[0];
             console.log(element);
             distancia = distancia_.replace('DISTANCIA', (result_i.distancia != undefined ? result_i.distancia : ''))
             caracteristicas = caracteristicas_.replace('CARACTERISTICA', (result_i.caracteristicas != undefined ? result_i.caracteristicas : ''))
@@ -389,10 +389,10 @@ function searchfunction(params) {
     
     var objDataMascota = {"geolocalizacion": geolocalizacion}
     lista_imagenes_url = [$("#imgInp").val()]
-    if($("#imgInp_2").val().length > 0){
+    if($("#imgInp_2")[0].src.length > 0){
         lista_imagenes_url.push($("#imgInp_2").val())
     }
-    if($("#imgInp_3").val().length > 0){
+    if($("#imgInp_3")[0].src.length > 0){
         lista_imagenes_url.push($("#imgInp_3").val())
     }
     objDataMascota["lista_imagenes_url"] = lista_imagenes_url
