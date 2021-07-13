@@ -368,7 +368,7 @@ function showresults(ims) {
         for (var i=0; i < resultados.length; i++) {
             result_i = resultados[i]
             console.log(result_i);
-            var element = "data:image/png;base64," + result_i.image;
+            var element = "data:image/png;base64," + result_i.list_encoded_string[0];
             console.log(element);
             distancia = distancia_.replace('DISTANCIA', (result_i.distancia != undefined ? result_i.distancia : ''))
             caracteristicas = caracteristicas_.replace('CARACTERISTICA', (result_i.caracteristicas != undefined ? result_i.caracteristicas : ''))
@@ -488,10 +488,10 @@ function reportfunction(params) {
     }
     
     lista_imagenes_bytes = [getByteString($("#imgslot")[0].src)]
-    if($("#imgslot-1").val().length > 0){
+    if($("#imgslot-1")[0].src.length > 0){
         lista_imagenes_bytes.push($("#imgslot-1").val())
     }
-    if($("#imgslot-2").val().length > 0){
+    if($("#imgslot-2")[0].src.length > 0){
         lista_imagenes_bytes.push($("#imgslot-2").val())
     }
     objDataMascota["lista_imagenes_bytes"] = lista_imagenes_bytes
