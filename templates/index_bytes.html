@@ -384,13 +384,21 @@ function showresults(ims) {
     }
 
     var imagenes_recortadas = result_variable["imagenes_recortadas"]
-    if(imagenes_recortadas.length > 0){
-        var htmlContenido = '<img id="imgslot" width="300" src=""/><img id="imgslot-1" width="500" src=""/><img id="imgslot-2" width="500" src=""/>'
-        document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
-        
-        document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
-        for(var i=1; i<imagenes_recortadas.length; i++) {
-            document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+    if (imagenes_recortadas != undefined) {
+        if(imagenes_recortadas.length > 0){
+            var htmlContenido = '<img id="imgslot" width="300" src=""/>';
+            if(imagenes_recortadas.length > 1){
+                htmlContenido = htmlContenido + '<img id="imgslot-1" width="500" src=""/>';
+                if(imagenes_recortadas.length > 2){
+                    htmlContenido = htmlContenido + '<img id="imgslot-2" width="500" src=""/>';
+                }
+            }
+            document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
+            
+            document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
+            for(var i=1; i<imagenes_recortadas.length; i++) {
+                document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+            }
         }
     }
     $("#imgslot-wrapper").show();
@@ -488,11 +496,15 @@ function reportfunction(params) {
     }
     
     lista_imagenes_bytes = [getByteString($("#imgslot")[0].src)]
-    if($("#imgslot-1")[0].src.length > 0){
-        lista_imagenes_bytes.push($("#imgslot-1").val())
+    if($("#imgslot-1")[0] != undefined){
+        if($("#imgslot-1")[0].src.length > 0){
+            lista_imagenes_bytes.push(getByteString($("#imgslot-1")[0].src))
+        }
     }
-    if($("#imgslot-2")[0].src.length > 0){
-        lista_imagenes_bytes.push($("#imgslot-2").val())
+    if($("#imgslot-2")[0] != undefined){
+        if($("#imgslot-2")[0].src.length > 0){
+            lista_imagenes_bytes.push(getByteString($("#imgslot-2")[0].src))
+        }
     }
     objDataMascota["lista_imagenes_bytes"] = lista_imagenes_bytes
     

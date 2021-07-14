@@ -363,13 +363,15 @@ function showresults(ims) {
 
     var imagenes_recortadas = result_variable["imagenes_recortadas"]
     if (imagenes_recortadas != undefined) {
-        if(imagenes_recortadas.length > 0){
-            var htmlContenido = '<img id="imgslot" width="300" src=""/><img id="imgslot-1" width="500" src=""/><img id="imgslot-2" width="500" src=""/>'
-            document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
-            
-            document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
-            for(var i=1; i<imagenes_recortadas.length; i++) {
-                document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+        if (imagenes_recortadas != undefined) {
+            if(imagenes_recortadas.length > 0){
+                var htmlContenido = '<img id="imgslot" width="300" src=""/><img id="imgslot-1" width="500" src=""/><img id="imgslot-2" width="500" src=""/>'
+                document.getElementById("results-imgslot-list").innerHTML = htmlContenido;
+                
+                document.getElementById("imgslot").src = "data:image/png;base64," + imagenes_recortadas[0];
+                for(var i=1; i<imagenes_recortadas.length; i++) {
+                    document.getElementById("imgslot-" + i).src = "data:image/png;base64," + imagenes_recortadas[i];
+                }
             }
         }
     }
@@ -389,10 +391,10 @@ function searchfunction(params) {
     
     var objDataMascota = {"geolocalizacion": geolocalizacion}
     lista_imagenes_url = [$("#imgInp").val()]
-    if($("#imgInp_2")[0].src.length > 0){
+    if($("#imgInp_2").val().length > 0){
         lista_imagenes_url.push($("#imgInp_2").val())
     }
-    if($("#imgInp_3")[0].src.length > 0){
+    if($("#imgInp_3").val().length > 0){
         lista_imagenes_url.push($("#imgInp_3").val())
     }
     objDataMascota["lista_imagenes_url"] = lista_imagenes_url
