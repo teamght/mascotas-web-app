@@ -436,9 +436,10 @@ function searchfunction(params) {
     /**
      * Datos del dueño
      * identificador: Número de teléfono u otro identificador
+     * email: Correo electrónico de la persona que reporta
      * contacto (opcional): Lista de teléfonos asociados a la mascota
      */
-    var dueno = {"identificador":"+5491111111111"}
+    var dueno = {"identificador":"+5491111111111", "email":"email@caba.com"}
     //var dueno = {"identificador":"+5491111111111", "contacto":["+5491111111111"]}
     objDataMascota["dueno"] = dueno
     
@@ -511,9 +512,10 @@ function reportfunction(params) {
     /**
      * Datos del dueño
      * identificador: Número de teléfono u otro identificador
+     * email: Correo electrónico de la persona que reporta
      * contacto (opcional): Lista de teléfonos asociados a la mascota
      */
-    var dueno = {"identificador":"+5491111111111"}
+    var dueno = {"identificador":"+5491111111111", "email":"email@caba.com"}
     objDataMascota["dueno"] = dueno
     
     var jsonDataMascota = JSON.stringify(objDataMascota)

@@ -52,8 +52,9 @@ def search_func():
         dueno = retornar_valor_campo_en_diccionario(data, 'dueno')
         if not dueno is None:
             identificador = retornar_valor_campo_en_diccionario(data['dueno'], 'identificador')  # Número telefónico de la persona que reportó desaparición
+            email = retornar_valor_campo_en_diccionario(data['dueno'], 'email') # Correo electrónico de la persona que reportó desaparición
             contacto = retornar_valor_campo_en_diccionario(data['dueno'], 'contacto')  # Números de teléfonos asociados al perro desaparecido
-            mascota_dueno_datos = MascotaDuenoRequest(identificador, contacto)
+            mascota_dueno_datos = MascotaDuenoRequest(identificador, email, contacto)
         
         caracteristicas = data['caracteristicas']
         geolocalizacion = data['geolocalizacion']
@@ -109,8 +110,9 @@ def reportar_func():
         dueno = retornar_valor_campo_en_diccionario(data, 'dueno')
         if not dueno is None:
             identificador = retornar_valor_campo_en_diccionario(data['dueno'], 'identificador')  # Número telefónico de la persona que reportó desaparición
+            email = retornar_valor_campo_en_diccionario(data['dueno'], 'email') # Correo electrónico de la persona que reportó desaparición
             contacto = retornar_valor_campo_en_diccionario(data['dueno'], 'contacto')  # Números de teléfonos asociados al perro desaparecido
-            mascota_dueno_datos = MascotaDuenoRequest(identificador, contacto)
+            mascota_dueno_datos = MascotaDuenoRequest(identificador, email, contacto)
         
         caracteristicas = data['caracteristicas']
         geolocalizacion = data['geolocalizacion']

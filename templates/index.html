@@ -410,9 +410,10 @@ function searchfunction(params) {
     /**
      * Datos del dueño
      * identificador: Número de teléfono u otro identificador
+     * email: Correo electrónico de la persona que reporta
      * contacto (opcional): Lista de teléfonos asociados a la mascota
      */
-    var dueno = {"identificador":"+5491111111111"}
+    var dueno = {"identificador":"+5491111111111", "email":"email@caba.com"}
     //var dueno = {"identificador":"+5491111111111", "contacto":["+5491111111111"]}
     objDataMascota["dueno"] = dueno
     
@@ -470,20 +471,25 @@ function reportfunction(params) {
     }
     
     lista_imagenes_bytes = [getByteString($("#imgslot")[0].src)]
-    if($("#imgslot-1").val().length > 0){
-        lista_imagenes_bytes.push($("#imgslot-1").val())
+    if($("#imgslot-1")[0] != undefined){
+        if($("#imgslot-1")[0].src.length > 0){
+            lista_imagenes_bytes.push(getByteString($("#imgslot-1")[0].src))
+        }
     }
-    if($("#imgslot-2").val().length > 0){
-        lista_imagenes_bytes.push($("#imgslot-2").val())
+    if($("#imgslot-2")[0] != undefined){
+        if($("#imgslot-2")[0].src.length > 0){
+            lista_imagenes_bytes.push(getByteString($("#imgslot-2")[0].src))
+        }
     }
     objDataMascota["lista_imagenes_bytes"] = lista_imagenes_bytes
     
     /**
      * Datos del dueño
      * identificador: Número de teléfono u otro identificador
+     * email: Correo electrónico de la persona que reporta
      * contacto (opcional): Lista de teléfonos asociados a la mascota
      */
-    var dueno = {"identificador":"+5491111111111"}
+    var dueno = {"identificador":"+5491111111111", "email":"email@caba.com"}
     objDataMascota["dueno"] = dueno
     
     var jsonDataMascota = JSON.stringify(objDataMascota)
