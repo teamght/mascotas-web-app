@@ -2,11 +2,11 @@ from flask import Flask, render_template, request, jsonify
 
 import os
 import base64
-
+import json
 from datetime import datetime
 
 from src.mascota_reportar_request import MascotaDuenoRequest, MascotaEncontrarRequest, MascotaReportartRequest
-from src.application import obtener_mascotas_parecidas, reportar_mascota_desaparecida
+from src.application import Application
 from src.util import mostrar_cadena_vacia, existe_campo_en_diccionario, retornar_valor_campo_en_diccionario
 
 
@@ -14,6 +14,7 @@ port = int(os.environ.get("PORT", 5001))
 
 app = Flask(__name__)
 
+application_consumer = Application()
 
 @app.route('/')
 @app.route('/index')
@@ -24,11 +25,10 @@ def index():
 def index_bytes():
     return render_template('index_bytes.html', title='Mascotas', ims={})
 
-@app.route('/search', methods=['GET','POST'])
+@app.route('/mascotas/busqueda', methods=['POST'])
 def search_func():
     dict_respuesta = {}
-    fecha_busqueda = datetime.now()
-    print('Inicio de búsqueda de mascota: {}'.format(fecha_busqueda))
+    print('Inicio de búsqueda de mascota: {}'.format(datetime.now()))
     try:
         data = request.json
         
@@ -68,7 +68,7 @@ def search_func():
         mascota_desaparecida = MascotaEncontrarRequest(mascota_dueno_datos, geolocalizacion, lista_imagenes_bytes, caracteristicas, fecha_de_perdida, 
                                             barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales)
         
-        flag, respuesta = obtener_mascotas_parecidas(mascota_desaparecida, flag_bytes_url)
+        flag, respuesta = application_consumer.obtener_mascotas_parecidas(mascota_desaparecida, flag_bytes_url)
         
         if 'resultados' in respuesta:
             dict_respuesta['resultados'] = respuesta['resultados']
@@ -88,10 +88,9 @@ def search_func():
     print('Fin de búsqueda de mascota: {}'.format(datetime.now()))
     return jsonify(dict_respuesta),200
 
-@app.route('/reportar', methods=['POST'])
-def reportar_func():
-    fecha_busqueda = datetime.now()
-    print('Inicio de reportar mascota desaparecida: {}'.format(fecha_busqueda))
+@app.route('/mascotas', methods=['POST'])
+def mascota_reportar():
+    print('Inicio de reportar mascota desaparecida: {}'.format(datetime.now()))
 
     dict_respuesta = {}
     try:
@@ -129,7 +128,7 @@ def reportar_func():
         #
         # Registrar en memoria la imagen reportada
         #
-        flag, dict_respuesta = reportar_mascota_desaparecida(mascota_desaparecida)
+        flag, dict_respuesta = application_consumer.reportar_mascota_desaparecida(mascota_desaparecida)
         ## Respuesta variable dict_respuesta:
         # dict_respuesta['file_name']
         # dict_respuesta['label']
@@ -146,6 +145,90 @@ def reportar_func():
         print('Hubo un error al reportar mascota desaparecida: {}'.format(datetime.now()))
         print('Hubo un error. {}'.format(e))
         return {'mensaje':'Hubo un error. Volver a reportar desaparición.'},400
+
+@app.route('/mascotas/data', methods=['PUT'])
+def mascotas_update_data():
+    print('Inicio de actualización de datos de mascota desaparecida: {}'.format(datetime.now()))
+    dict_respuesta = {}
+    try:
+        data = request.json
+        
+        if data == None:
+            return {'mensaje':'No se identifico objetos dentro del payload.', 'codigo': 400},400
+        else:
+            flag, dict_respuesta = application_consumer.actualizar_data_mascota_desaparecida(data)
+            
+            if flag:
+                return jsonify(dict_respuesta),503
+
+            print('Fin de actualización de datos de mascota desaparecida: {}'.format(datetime.now()))
+            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+    except Exception as e:
+        print('Hubo un error al actualizar datos de mascota desaparecida ({}): {}'.format(datetime.now(), e))
+        return {'mensaje':'Hubo un error al actualizar datos de mascota.', 'codigo': 503},503
+
+@app.route('/mascotas', methods=['DELETE'])
+def mascotas_delete():
+    print('Inicio de eliminación de datos de mascota desaparecida: {}'.format(datetime.now()))
+    dict_respuesta = {}
+    try:
+        data = request.json
+        
+        if data == None:
+            return {'mensaje':'No se identifico objetos dentro del payload.', 'codigo': 400},400
+        else:
+            flag, dict_respuesta = application_consumer.eliminar_mascota_desaparecida(data)
+            
+            if flag:
+                return jsonify(dict_respuesta),503
+
+            print('Fin de eliminación de datos de mascota desaparecida: {}'.format(datetime.now()))
+            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+    except Exception as e:
+        print('Hubo un error al eliminar datos de mascota desaparecida ({}): {}'.format(datetime.now(), e))
+        return {'mensaje':'Hubo un error al eliminar datos de mascota.', 'codigo': 503},503
+
+@app.route('/mascotas', methods=['PUT'])
+def mascotas_encontrada():
+    print('Inicio de actualización de estado de mascota desaparecida a encontrada: {}'.format(datetime.now()))
+    dict_respuesta = {}
+    try:
+        data = request.json
+        
+        if data == None:
+            return {'mensaje':'No se identifico objetos dentro del payload.', 'codigo': 400},400
+        else:
+            flag, dict_respuesta = application_consumer.encontrar_mascota_desaparecida(data)
+            
+            if flag:
+                return jsonify(dict_respuesta),500
+
+            print('Fin de actualización de estado de mascota desaparecida a encontrada: {}'.format(datetime.now()))
+            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+    except Exception as e:
+        print('Hubo un error al actualizar estado de mascota desaparecida a encontrada ({}): {}'.format(datetime.now(), e))
+        return {'mensaje':'Hubo un error al actualizar estado de mascota desaparecida a encontrada.', 'codigo': 500},500
+
+@app.route('/mascotas/ownerpets', methods=['POST'])
+def ownerpets():
+    print('Inicio de listar las mascotas de un dueño: {}'.format(datetime.now()))
+    dict_respuesta = {}
+    try:
+        data = request.json
+        
+        if data == None:
+            return {'mensaje':'No se identifico objetos dentro del payload.', 'codigo': 400},400
+        else:
+            flag, dict_respuesta = application_consumer.obtener_ownerpets(data)
+            
+            if flag:
+                return jsonify(dict_respuesta),500
+
+            print('Fin de listar las mascotas de un dueño: {}'.format(datetime.now()))
+            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+    except Exception as e:
+        print('Hubo un error al actualizar estado de mascota desaparecida a encontrada ({}): {}'.format(datetime.now(), e))
+        return {'mensaje':'Hubo un error al listar las mascotas de un dueño.', 'codigo': 500},500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

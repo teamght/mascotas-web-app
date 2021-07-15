@@ -15,6 +15,5 @@ def retornar_valor_campo_en_diccionario(diccionario, campo):
         return diccionario[campo]
     return None
 
-ENDPOINT_TENSORFLOW_MODEL = os.environ.get('ENDPOINT_TENSORFLOW_MODEL')
+ENDPOINT_MASCOTAS = os.environ.get('ENDPOINT_MASCOTAS')
 
-ENDPOINT_REPORTAR_MASCOTA = os.environ.get('ENDPOINT_REPORTAR_MASCOTA')

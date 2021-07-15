@@ -386,7 +386,7 @@ function showresults(ims) {
     var imagenes_recortadas = result_variable["imagenes_recortadas"]
     if (imagenes_recortadas != undefined) {
         if(imagenes_recortadas.length > 0){
-            var htmlContenido = '<img id="imgslot" width="300" src=""/>';
+            var htmlContenido = '<img id="imgslot" width="500" src=""/>';
             if(imagenes_recortadas.length > 1){
                 htmlContenido = htmlContenido + '<img id="imgslot-1" width="500" src=""/>';
                 if(imagenes_recortadas.length > 2){
@@ -445,7 +445,7 @@ function searchfunction(params) {
     
     var jsonDataMascota = JSON.stringify(objDataMascota)
     $.ajax({
-            url: "/search",
+            url: "/mascotas/busqueda",
             //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotasBuscar?",
             type: "POST",
             cache: false,
@@ -521,7 +521,7 @@ function reportfunction(params) {
     var jsonDataMascota = JSON.stringify(objDataMascota)
     
     $.ajax({
-            url: "/reportar",
+            url: "/mascotas",
             //url: "https://mascotas-buscar-app.azurewebsites.net/api/HttpTriggerMascotaReportar?",
             type: "POST",
             cache: false,
