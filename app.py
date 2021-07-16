@@ -64,9 +64,10 @@ def search_func():
         perro_nombre = data['nombre'] if 'nombre' in data else None
         comportamiento = data['comportamiento'] if 'comportamiento' in data else None
         datos_adicionales = data['datos_adicionales'] if 'datos_adicionales' in data else None
+        estado = data['estado'] if 'estado' in data else None
         
         mascota_desaparecida = MascotaEncontrarRequest(mascota_dueno_datos, geolocalizacion, lista_imagenes_bytes, caracteristicas, fecha_de_perdida, 
-                                            barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales)
+                                            barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales, estado)
         
         flag, respuesta = application_consumer.obtener_mascotas_parecidas(mascota_desaparecida, flag_bytes_url)
         
@@ -121,9 +122,10 @@ def mascota_reportar():
         perro_nombre = data['nombre'] if 'nombre' in data else None
         comportamiento = data['comportamiento'] if 'comportamiento' in data else None
         datos_adicionales = data['datos_adicionales'] if 'datos_adicionales' in data else None
+        estado = data['estado'] if 'estado' in data else None
         
         mascota_desaparecida = MascotaReportartRequest(mascota_dueno_datos, geolocalizacion, lista_imagenes_bytes, caracteristicas, fecha_de_perdida, 
-                                            barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales)
+                                            barrio_nombre, genero, perro_nombre, comportamiento, datos_adicionales, estado)
         
         #
         # Registrar en memoria la imagen reportada

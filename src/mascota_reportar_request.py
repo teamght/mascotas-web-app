@@ -7,7 +7,7 @@ class MascotaDuenoRequest:
 
 class MascotaEncontrarRequest:
     def __init__(self, dueno, geolocalizacion_reportado, lista_imagenes_bytes, caracteristicas, fecha_de_perdida, 
-        barrio_nombre, genero, nombre, comportamiento, datos_adicionales):
+        barrio_nombre, genero, nombre, comportamiento, datos_adicionales, estado):
         self.dueno = dueno
         self.geolocalizacion_reportado = geolocalizacion_reportado
         self.lista_imagenes_bytes = lista_imagenes_bytes
@@ -18,11 +18,12 @@ class MascotaEncontrarRequest:
         self.nombre = nombre
         self.comportamiento = comportamiento
         self.datos_adicionales = datos_adicionales
+        self.estado = estado
 
 
 class MascotaReportartRequest:
     def __init__(self, dueno, geolocalizacion_reportado, lista_imagenes_bytes, caracteristicas, fecha_de_perdida, 
-        barrio_nombre, genero, nombre, comportamiento, datos_adicionales):
+        barrio_nombre, genero, nombre, comportamiento, datos_adicionales, estado):
         self.dueno = dueno
         self.geolocalizacion_reportado = geolocalizacion_reportado
         self.lista_imagenes_bytes = lista_imagenes_bytes
@@ -33,3 +34,4 @@ class MascotaReportartRequest:
         self.nombre = nombre
         self.comportamiento = comportamiento
         self.datos_adicionales = datos_adicionales
+        self.estado = estado

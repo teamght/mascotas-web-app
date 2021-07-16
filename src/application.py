@@ -20,6 +20,7 @@ class Application():
                         'nombre': mascota_desaparecida.nombre, 
                         'comportamiento': mascota_desaparecida.comportamiento, 
                         'datos_adicionales': mascota_desaparecida.datos_adicionales,
+                        'estado': mascota_desaparecida.estado,
                         'dueno': mascota_desaparecida.dueno.__dict__}
                 if flag_bytes_url == 'bytes':
                     files['lista_imagenes_bytes'] = mascota_desaparecida.lista_imagenes_bytes
@@ -52,6 +53,7 @@ class Application():
                         'nombre': mascota_desaparecida.nombre, 
                         'comportamiento': mascota_desaparecida.comportamiento, 
                         'datos_adicionales': mascota_desaparecida.datos_adicionales,
+                        'estado': mascota_desaparecida.estado,
                         'dueno': mascota_desaparecida.dueno.__dict__}
                 response = requests.post(ENDPOINT_MASCOTAS, json=files)
                 print('Respuesta: {}'.format(response.text))
@@ -79,6 +81,9 @@ class Application():
             return False, str(e)
     
     def eliminar_mascota_desaparecida(self, json_mascota_desaparecida):
+        '''
+        Eliminar datos de la mascota
+        '''
         try:
             if ENDPOINT_MASCOTAS:
                 response = requests.delete(ENDPOINT_MASCOTAS, json=json_mascota_desaparecida)
@@ -91,6 +96,9 @@ class Application():
             return False, str(e)
     
     def encontrar_mascota_desaparecida(self, json_mascota_desaparecida):
+        '''
+        Actualizar estado de la mascota a encontrada
+        '''
         try:
             if ENDPOINT_MASCOTAS:
                 response = requests.put(ENDPOINT_MASCOTAS, json=json_mascota_desaparecida)
@@ -103,6 +111,10 @@ class Application():
             return False, str(e)
 
     def obtener_ownerpets(self, json_mascota_desaparecida):
+        '''
+        Obtener todas las mascotas reportadas como desaparecidas
+        Sólo retorna las mascotas que aún siguen desaparecidas
+        '''
         try:
             if ENDPOINT_MASCOTAS:
                 response = requests.post(ENDPOINT_MASCOTAS + '/ownerpets', json=json_mascota_desaparecida)

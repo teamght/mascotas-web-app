@@ -172,6 +172,41 @@
         </div>
         <div class="input-group mb-3 mx-auto w-50">
             <div class="input-group-prepend">
+                <span class="input-group-text">
+                    Estado de la mascota en base de datos:
+                </span>
+                <div class="form-check form-check-inline" id="genero">
+                    <label class="form-check-label">
+                        <input checked="true" class="form-check-input" id="opcionHembra" name="gridEstados" type="radio" value="1">
+                            Encontrado en la calle por una persona
+                        </input>
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input checked="" class="form-check-input" id="opcionMacho" name="gridEstados" type="radio" value="2">
+                            Reportado como perdido por el dueño
+                        </input>
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input checked="" class="form-check-input" id="opcionMacho" name="gridEstados" type="radio" value="3">
+                            Baja lógica (Cuando se encontró el perro y fue entregado a su dueño)
+                        </input>
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input checked="" class="form-check-input" id="opcionMacho" name="gridEstados" type="radio" value="0">
+                            Empadronado (Registrado por el dueño, pero no está perdido)
+                        </input>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="input-group mb-3 mx-auto w-50">
+            <div class="input-group-prepend">
                 <span class="input-group-text" id="inputGroup-sizing-default">
                     Características físicas
                 </span>
@@ -412,6 +447,14 @@ function searchfunction(params) {
     objDataMascota["comportamiento"] = document.getElementById('comportamiento').value;
     objDataMascota["datos_adicionales"] = document.getElementById('datos_adicionales').value;
     objDataMascota["genero"] = document.querySelector('input[name="gridRadios"]:checked').value;
+    /**
+     * Valores de estado:
+     *   - 1: perdido (persona que perdió su perro)
+     *   - 2: encontrado (persona encuentra un perro en la calle)
+     *   - 3: baja logica  (cuando el perro hizo el match)
+     *   - 0: empadronado
+    */
+    objDataMascota["estado"] = parseInt(document.querySelector('input[name="gridEstados"]:checked').value);
     
     /**
      * Datos del dueño
@@ -474,6 +517,14 @@ function reportfunction(params) {
         "datos_adicionales": datos_adicionales,
         "geolocalizacion": geolocalizacion
     }
+    /**
+     * Valores de estado:
+     *   - 1: perdido (persona que perdió su perro)
+     *   - 2: encontrado (persona encuentra un perro en la calle)
+     *   - 3: baja logica  (cuando el perro hizo el match)
+     *   - 0: empadronado
+    */
+    objDataMascota["estado"] = parseInt(document.querySelector('input[name="gridEstados"]:checked').value);
     
     lista_imagenes_bytes = [getByteString($("#imgslot")[0].src)]
     if($("#imgslot-1")[0] != undefined){
