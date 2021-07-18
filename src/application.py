@@ -125,3 +125,27 @@ class Application():
         except Exception as e:
             print(e)
             return False, str(e)
+
+    def empadronar_mascota(self, json_mascota):
+        '''
+        Empadronar mascota
+        '''
+        try:
+            if ENDPOINT_MASCOTAS:
+                response = requests.post(ENDPOINT_MASCOTAS + '/data', json=json_mascota)
+                print('Respuesta: {}'.format(response.text))
+                respuesta = json.loads(response.text)
+                return True, respuesta
+            return False, 'No se ha inicializado variable de entorno ENDPOINT_MASCOTAS'
+        except Exception as e:
+            print(e)
+            return False, str(e)
+
+
+class NumpyValuesEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.float32):
+            return float(obj)
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return json.JSONEncoder.default(self, obj)

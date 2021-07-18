@@ -17,3 +17,4 @@ def retornar_valor_campo_en_diccionario(diccionario, campo):
 
 ENDPOINT_MASCOTAS = os.environ.get('ENDPOINT_MASCOTAS')
 
+ENDPOINT_MASCOTAS = 'http://localhost:5000/mascotas'

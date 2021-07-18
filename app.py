@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 from src.mascota_reportar_request import MascotaDuenoRequest, MascotaEncontrarRequest, MascotaReportartRequest
-from src.application import Application
+from src.application import Application,NumpyValuesEncoder
 from src.util import mostrar_cadena_vacia, existe_campo_en_diccionario, retornar_valor_campo_en_diccionario
 
 
@@ -47,7 +47,7 @@ def search_func():
 
         if len(lista_imagenes_bytes) == 0:
             return {'mensaje':'Debe ingresar al menos una imagen.', 'codigo': 400},400
-        
+
         # Datos del dueño
         dueno = retornar_valor_campo_en_diccionario(data, 'dueno')
         if not dueno is None:
@@ -160,14 +160,37 @@ def mascotas_update_data():
         else:
             flag, dict_respuesta = application_consumer.actualizar_data_mascota_desaparecida(data)
             
-            if flag:
-                return jsonify(dict_respuesta),503
+            if not flag:
+                return jsonify(dict_respuesta),500
 
             print('Fin de actualización de datos de mascota desaparecida: {}'.format(datetime.now()))
             return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
     except Exception as e:
         print('Hubo un error al actualizar datos de mascota desaparecida ({}): {}'.format(datetime.now(), e))
         return {'mensaje':'Hubo un error al actualizar datos de mascota.', 'codigo': 503},503
+
+@app.route('/mascotas/data', methods=['POST'])
+def mascotas_insert_data():
+    print('Inicio de empadronamiento de mascota {}'.format(datetime.now()))
+    dict_respuesta = {}
+    try:
+        data = request.json
+        
+        if data == None:
+            return {'mensaje':'No se identifico objetos dentro del payload.', 'codigo': 400},400
+        else:
+            flag, dict_respuesta = application_consumer.empadronar_mascota(data)
+            
+            if not flag:
+                return jsonify(dict_respuesta),500
+
+            print('Fin de empadronamiento de mascota: {}'.format(datetime.now()))
+            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+    except Exception as e:
+        print('Hubo un error al empadronar la mascota ({}): {}'.format(datetime.now(), e))
+        return {'mensaje':'Hubo un error al empadronar la mascota.', 'codigo': 503},503
+
+
 
 @app.route('/mascotas', methods=['DELETE'])
 def mascotas_delete():
@@ -181,8 +204,8 @@ def mascotas_delete():
         else:
             flag, dict_respuesta = application_consumer.eliminar_mascota_desaparecida(data)
             
-            if flag:
-                return jsonify(dict_respuesta),503
+            if not flag:
+                return jsonify(dict_respuesta),500
 
             print('Fin de eliminación de datos de mascota desaparecida: {}'.format(datetime.now()))
             return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
@@ -202,7 +225,7 @@ def mascotas_encontrada():
         else:
             flag, dict_respuesta = application_consumer.encontrar_mascota_desaparecida(data)
             
-            if flag:
+            if not flag:
                 return jsonify(dict_respuesta),500
 
             print('Fin de actualización de estado de mascota desaparecida a encontrada: {}'.format(datetime.now()))
@@ -223,7 +246,7 @@ def ownerpets():
         else:
             flag, dict_respuesta = application_consumer.obtener_ownerpets(data)
             
-            if flag:
+            if not flag:
                 return jsonify(dict_respuesta),500
 
             print('Fin de listar las mascotas de un dueño: {}'.format(datetime.now()))
