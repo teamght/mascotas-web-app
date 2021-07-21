@@ -164,7 +164,7 @@ def mascotas_update_data():
                 return jsonify(dict_respuesta),500
 
             print('Fin de actualización de datos de mascota desaparecida: {}'.format(datetime.now()))
-            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+            return jsonify(dict_respuesta),dict_respuesta['codigo']
     except Exception as e:
         print('Hubo un error al actualizar datos de mascota desaparecida ({}): {}'.format(datetime.now(), e))
         return {'mensaje':'Hubo un error al actualizar datos de mascota.', 'codigo': 503},503
@@ -185,11 +185,10 @@ def mascotas_insert_data():
                 return jsonify(dict_respuesta),500
 
             print('Fin de empadronamiento de mascota: {}'.format(datetime.now()))
-            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+            return jsonify(dict_respuesta),dict_respuesta['codigo']
     except Exception as e:
         print('Hubo un error al empadronar la mascota ({}): {}'.format(datetime.now(), e))
         return {'mensaje':'Hubo un error al empadronar la mascota.', 'codigo': 503},503
-
 
 
 @app.route('/mascotas', methods=['DELETE'])
@@ -208,7 +207,7 @@ def mascotas_delete():
                 return jsonify(dict_respuesta),500
 
             print('Fin de eliminación de datos de mascota desaparecida: {}'.format(datetime.now()))
-            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+            return jsonify(dict_respuesta),dict_respuesta['codigo']
     except Exception as e:
         print('Hubo un error al eliminar datos de mascota desaparecida ({}): {}'.format(datetime.now(), e))
         return {'mensaje':'Hubo un error al eliminar datos de mascota.', 'codigo': 503},503
@@ -229,7 +228,7 @@ def mascotas_encontrada():
                 return jsonify(dict_respuesta),500
 
             print('Fin de actualización de estado de mascota desaparecida a encontrada: {}'.format(datetime.now()))
-            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+            return jsonify(dict_respuesta),dict_respuesta['codigo']
     except Exception as e:
         print('Hubo un error al actualizar estado de mascota desaparecida a encontrada ({}): {}'.format(datetime.now(), e))
         return {'mensaje':'Hubo un error al actualizar estado de mascota desaparecida a encontrada.', 'codigo': 500},500
@@ -250,7 +249,7 @@ def ownerpets():
                 return jsonify(dict_respuesta),500
 
             print('Fin de listar las mascotas de un dueño: {}'.format(datetime.now()))
-            return json.dumps(dict_respuesta, cls=NumpyValuesEncoder),dict_respuesta['codigo']
+            return jsonify(dict_respuesta),dict_respuesta['codigo']
     except Exception as e:
         print('Hubo un error al actualizar estado de mascota desaparecida a encontrada ({}): {}'.format(datetime.now(), e))
         return {'mensaje':'Hubo un error al listar las mascotas de un dueño.', 'codigo': 500},500
