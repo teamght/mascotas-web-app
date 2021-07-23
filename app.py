@@ -77,6 +77,12 @@ def search_func():
         if 'imagenes_recortadas' in respuesta:
             dict_respuesta["imagenes_recortadas"] = respuesta["imagenes_recortadas"]
         
+        if 'mascota' in respuesta:
+            dict_respuesta["mascota"] = respuesta["mascota"]
+        
+        if 'list_encoded_string' in respuesta:
+            dict_respuesta["list_encoded_string"] = respuesta["list_encoded_string"]
+        
         dict_respuesta['codigo'] = respuesta['codigo']
         dict_respuesta['mensaje'] = respuesta['mensaje']
     except Exception as e:
