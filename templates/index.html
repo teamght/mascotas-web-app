@@ -381,7 +381,7 @@ function showresults(ims) {
         for (var i=0; i < resultados.length; i++) {
             result_i = resultados[i]
             console.log(result_i);
-            var element = "data:image/png;base64," + result_i.list_encoded_string[0];
+            var element = result_i.list_encoded_string[0];
             console.log(element);
             distancia = distancia_.replace('DISTANCIA', (result_i.distancia != undefined ? result_i.distancia : ''))
             caracteristicas = caracteristicas_.replace('CARACTERISTICA', (result_i.caracteristicas != undefined ? result_i.caracteristicas : ''))
