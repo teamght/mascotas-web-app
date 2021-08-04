@@ -261,4 +261,4 @@ def ownerpets():
         return {'mensaje':'Hubo un error al listar las mascotas de un dueño.', 'codigo': 500},500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port)
